@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ola Ride Options</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+        }
+
+        .header img {
+            height: 40px;
+        }
+
+        .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        .tab.active {
+            background-color: #d4f1d4;
+            border-radius: 5px;
+            color: #111;
+        }
+
+        .ride-section, .outstation-section {
+            display: none;
+        }
+
+        .ride-section.active, .outstation-section.active {
+            display: block;
+        }
+
+        .ride-section input, .ride-section select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .info-box {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .info-box ul {
+            list-style: none;
+        }
+
+        .info-box li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .info-box li img {
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .ride-option {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="menu-icon">&#9776;</div>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Ola_Cabs_logo.png" alt="Ola Logo">
+            <div class="profile-icon">&#128100;</div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" data-target="ride-section">Daily Rides</div>
+            <div class="tab" data-target="outstation-section">Outstation</div>
+            <div class="tab" data-target="ride-section">Rentals</div>
+        </div>
+
+        <!-- Daily Rides Section -->
+        <div class="ride-section active">
+            <input type="text" placeholder="From (e.g., Sambhavi Boy's Hostel)">
+            <input type="text" placeholder="To (Search for a locality or landmark)">
+            <select>
+                <option value="now">Now</option>
+                <option value="later">Later</option>
+            </select>
+        </div>
+
+        <!-- Outstation Section -->
+        <div class="outstation-section">
+            <input type="text" placeholder="From (e.g., Sambhavi Boy's Hostel)">
+            <input type="text" placeholder="To (Enter a city, hotel or address)">
+
+            <div class="info-box">
+                <h3>Why book with us?</h3>
+                <ul>
+                    <li><img src="down-arrow.png" alt="Icon"> Lowest AC cab fares starting from ₹8/km</li>
+                    <li><img src="shield.png" alt="Icon"> Regularly-audited cars</li>
+                    <li><img src="support.png" alt="Icon"> 24x7 support and on-road assistance</li>
+                    <li><img src="tracking.png" alt="Icon"> Real-time tracking for your family and SOS support</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tabs = document.querySelectorAll('.tab');
+        const sections = document.querySelectorAll('.ride-section, .outstation-section');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                sections.forEach(section => section.classList.remove('active'));
+
+                tab.classList.add('active');
+                const target = tab.getAttribute('data-target');
+                document.querySelector(`.${target}`).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

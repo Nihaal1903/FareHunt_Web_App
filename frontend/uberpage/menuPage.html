@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Profile Page with Icons</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: linear-gradient(to bottom, #f0f8ff, #add8e6);
+      color: #333;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      border-bottom: 1px solid #ccc;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      font-family:"Inter, Sans-Serif";
+    }
+    header .close-btn {
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    header .close-btn:hover {
+      transform: rotate(90deg);
+    }
+    .profile-section {
+      text-align: center;
+      padding: 20px;
+    }
+    .profile-section img {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .profile-section h2 {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #0047ab;
+    }
+    .options {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px;
+    }
+    .options div {
+      text-align: center;
+      background: linear-gradient(to top, #ffffff, #f3f4f6);
+      border-radius: 15px;
+      padding: 15px;
+      width: 30%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s, background 0.3s;
+      box-shadow:rgb(from color r g b)
+    }
+    .actions {
+      display: flex;
+      justify-content: space-around;
+      padding: 20px;
+    }
+    .actions div {
+      text-align: center;
+      background: linear-gradient(to top, #ffffff, #f3f4f6);
+      border-radius: 15px;
+      padding: 15px;
+      width: 30%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .actions div:hover {
+      background: linear-gradient(to top, #f3f4f6, #e0e0e0);
+      transform: translateY(-5px);
+    }
+    .actions div i {
+      font-size: 2rem;
+      color: #0047ab;
+      margin-bottom: 5px;
+    }
+    .actions div p {
+      font-size: 1rem;
+      font-weight: 500;
+    }
+    .menu {
+      padding: 20px;
+      
+    }
+    .menu div {
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 10px;
+      background: #f8f9fa;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s;
+    }
+    .menu div:hover {
+      background: #e0e7ff;
+    }
+    .menu div i {
+      font-size: 1.5rem;
+      margin-right: 10px;
+      color: #0056b3;
+    }
+    .suggestions {
+      padding: 20px;
+    }
+    .suggestions h3 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+      color: #0047ab;
+      text-align: center;
+    }
+    .suggestions .options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+    }
+    .suggestions .option {
+      flex: 1 1 calc(20% - 15px);
+      text-align: center;
+      padding: 15px;
+      background: linear-gradient(to bottom, #ffffff, #f1f1f1);
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .suggestions .option:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+    .suggestions .option i {
+      font-size: 2rem;
+      color: #0047ab;
+      margin-bottom: 5px;
+    }
+    .footer {
+      
+      padding: 10px 20px;
+      text-align: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      border-top: 1px solid #ccc;
+      box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+      color: #fff;
+    }
+    .footer,img{
+      border-radius: 50%;
+    }
+    .footer img {
+      width: 40px;
+      transition: transform 0.3s;
+    }
+    .footer img:hover {
+      transform: rotate(360deg);
+    }
+    @media (max-width: 600px) {
+      .actions div {
+        width: 45%;
+      }
+      .suggestions .option {
+        flex: 1 1 calc(45% - 15px);
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  
+  <div class="profile-section">
+    <img src="../assets/Farehunt logo.png" alt="Profile Picture">
+    <h2>Sample_User</h2>
+  </div>
+
+  <div class="actions">
+    <div>
+      <i class="fas fa-history"></i>
+      <p>Activity</p>
+    </div>
+    <div>
+      <i class="fas fa-wallet"></i>
+      <p>Wallet</p>
+    </div>
+    <div>
+      <i class="fas fa-tag"></i>
+      <p>Promos</p>
+    </div>
+  </div>
+
+  <div class="menu">
+    <div><i class="fas fa-headset"></i> Support</div>
+    <div><i class="fas fa-user-cog"></i> Manage account</div>
+    <div><i class="fas fa-cog"></i> Settings</div>
+  </div>
+
+  <div class="suggestions">
+    <h3>Suggestions</h3>
+    <div class="options">
+      <div class="option">
+        <i class="fas fa-car"></i>
+        <p>Ride</p>
+      </div>
+      <div class="option">
+        <i class="fas fa-box"></i>
+        <p>Package</p>
+      </div>
+      <div class="option">
+        <i class="fas fa-car-side"></i>
+        <p>Rentals</p>
+      </div>
+      <div class="option">
+        <i class="fas fa-bus"></i>
+        <p>Shuttle</p>
+      </div>
+      <div class="option">
+        <i class="fas fa-calendar-alt"></i>
+        <p>Reserve</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <img src="./Uber_logo.png" alt="Uber Logo">
+  </div>
+</body>
+</html>

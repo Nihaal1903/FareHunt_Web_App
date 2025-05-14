@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapido</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #1a1a1a;
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #FFB800 0%, #FFD700 100%);
+            color: #fff;
+            padding: 15px 20px;
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 0.5s ease-out;
+            margin: -25px -25px 25px -25px;
+            border-radius: 15px 15px 0 0;
+            box-shadow: 0 4px 15px rgba(255, 184, 0, 0.2);
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.15) 25%, transparent 25%),
+                        linear-gradient(-45deg, rgba(255,255,255,0.15) 25%, transparent 25%);
+            background-size: 20px 20px;
+            animation: movePattern 20s linear infinite;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header img {
+            height: 50px;
+            transition: transform 0.3s ease;
+            animation: pulse 2s infinite;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header img:hover {
+            transform: scale(1.15);
+        }
+
+        .location-info {
+            background: #fff;
+            padding: 25px 20px;
+            position: relative;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            animation: slideUp 0.5s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .location-info h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #1a1a1a;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-info h3::before {
+            content: '📍';
+            font-size: 24px;
+        }
+
+        .location-info p {
+            font-size: 16px;
+            color: #333;
+            margin: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .location-info p:hover {
+            transform: translateX(5px);
+            color: #ff6b00;
+        }
+
+        .location-info p::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff6b00;
+            transition: all 0.3s ease;
+        }
+
+        .location-info p.pickup::before {
+            background: #ff6b00;
+        }
+
+        .location-info p.drop::before {
+            background: #fff;
+            border: 2px solid #ff6b00;
+        }
+
+        .ride-options {
+            padding: 20px;
+            background: #f8f9fa;
+            flex: 1;
+            margin-bottom: 20px;
+            border-radius: 12px;
+        }
+
+        .ride-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.5s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .ride-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b00, #ff8533);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .ride-option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .ride-option:hover::before {
+            transform: scaleX(1);
+        }
+
+        .ride-option.selected {
+            border: 2px solid #ff6b00;
+            background: #fff9f5;
+        }
+
+        .ride-info {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            gap: 20px;
+        }
+
+        .ride-info img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 12px;
+            padding: 10px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .ride-option:hover .ride-info img {
+            transform: scale(1.1);
+        }
+
+        .ride-details {
+            flex: 1;
+        }
+
+        .ride-details .title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+        }
+
+        .ride-details .description {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .time-estimate {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 5px;
+        }
+
+        .fare-estimate {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff6b00;
+            margin-left: 20px;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            transition: all 0.3s ease;
+        }
+
+        .fare-estimate::after {
+            content: 'Est. fare';
+            font-size: 12px;
+            color: #666;
+            font-weight: 400;
+            margin-top: 4px;
+        }
+
+        .bottom-bar {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 15px 15px;
+            backdrop-filter: blur(10px);
+            margin: 0 -25px -25px -25px;
+        }
+
+        .fare-display {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .fare-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .fare-amount {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b00;
+        }
+
+        .book-button {
+            background: #ff6b00;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(255, 107, 0, 0.2);
+        }
+
+        .book-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 0, 0.3);
+            background: #ff8533;
+        }
+
+        .book-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(255, 107, 0, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes movePattern {
+            from { background-position: 0 0; }
+            to { background-position: 40px 40px; }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 15px;
+                padding: 20px;
+                min-height: calc(100vh - 30px);
+            }
+
+            .ride-info {
+                gap: 12px;
+            }
+
+            .ride-info img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .ride-details .title {
+                font-size: 16px;
+            }
+
+            .ride-details .description {
+                font-size: 13px;
+            }
+
+            .fare-estimate {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="banner">
+            <div class="header">
+                <img src="../mainPage/rapido_logo.webp" alt="Rapido" class="logo">
+            </div>
+        </div>
+
+        <div class="location-info">
+            <h3>Your Route</h3>
+            <p class="pickup" id="rapidoPickup">Loading...</p>
+            <p class="drop" id="rapidoDrop">Loading...</p>
+        </div>
+
+        <div class="ride-options">
+            <div class="ride-option" id="bike-option">
+                <div class="ride-info">
+                    <img src="../assets/bike_icon.webp" alt="Bike">
+                    <div class="ride-details">
+                        <div class="title">Bike</div>
+                        <div class="description">Quick and affordable rides</div>
+                        <div class="time-estimate">~5 mins away</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </div>
+
+            <div class="ride-option" id="auto-option">
+                <div class="ride-info">
+                    <img src="../assets/rickshaw_icon.png" alt="Auto">
+                    <div class="ride-details">
+                        <div class="title">Auto</div>
+                        <div class="description">Comfortable auto rides</div>
+                        <div class="time-estimate">~5 mins away</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </div>
+
+            <div class="ride-option" id="mini-option">
+                <div class="ride-info">
+                    <img src="../assets/mini_icon.png" alt="Mini">
+                    <div class="ride-details">
+                        <div class="title">Mini</div>
+                        <div class="description">Budget-friendly cab rides</div>
+                        <div class="time-estimate">~5 mins away</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pickupCoords, dropCoords;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const pickup = sessionStorage.getItem('pickupLocation');
+            const drop = sessionStorage.getItem('dropLocation');
+            pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
+            dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
+            
+            if (pickup && drop) {
+                document.getElementById('rapidoPickup').textContent = pickup;
+                document.getElementById('rapidoDrop').textContent = drop;
+                
+                // Calculate distance and fetch fare estimates
+                calculateDistanceAndFetchEstimates();
+            } else {
+                alert('Location data not found. Please select locations from the main page.');
+                window.location.href = '../mainPage/hello.html';
+            }
+        });
+
+        function calculateDistanceAndFetchEstimates() {
+            // Calculate distance
+            const distance = calculateDistance(
+                pickupCoords.lat, pickupCoords.lng,
+                dropCoords.lat, dropCoords.lng
+            );
+            
+            // Fetch fare estimates
+            fetchFareEstimates();
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function bookRide() {
+            const selectedOption = document.querySelector('.ride-option.selected');
+            if (!selectedOption) {
+                alert('Please select a ride option first');
+                return;
+            }
+
+            const vehicleType = selectedOption.id.split('-')[0];
+            const price = selectedOption.querySelector('.fare-estimate').textContent;
+
+            // Store booking details
+            sessionStorage.setItem('selectedVehicle', vehicleType);
+            sessionStorage.setItem('ridePrice', price);
+
+            // Redirect to booking confirmation
+            window.location.href = 'booking-confirmation.html';
+        }
+
+        // Add click handlers for ride options
+        document.querySelectorAll('.ride-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected class from all options
+                document.querySelectorAll('.ride-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                // Add selected class to clicked option
+                this.classList.add('selected');
+            });
+        });
+
+        // Function to fetch fare estimates
+        async function fetchFareEstimates() {
+            try {
+                console.log('Sending request with coordinates:', {
+                    start_latitude: pickupCoords.lat,
+                    start_longitude: pickupCoords.lng,
+                    end_latitude: dropCoords.lat,
+                    end_longitude: dropCoords.lng
+                });
+
+                const response = await fetch('http://localhost:3001/api/rapido/estimate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        start_latitude: pickupCoords.lat,
+                        start_longitude: pickupCoords.lng,
+                        end_latitude: dropCoords.lat,
+                        end_longitude: dropCoords.lng
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Server error:', errorData);
+                    throw new Error('Failed to fetch fare estimates');
+                }
+
+                const data = await response.json();
+                console.log('Full response data:', data);
+                console.log('Received estimates:', data.estimates);
+                
+                if (data.estimates) {
+                    // Log each vehicle type and its fare
+                    Object.entries(data.estimates).forEach(([type, fare]) => {
+                        console.log(`${type} fare:`, fare);
+                    });
+                    updateFareEstimates(data.estimates);
+                } else {
+                    console.error('No estimates found in response');
+                }
+            } catch (error) {
+                console.error('Error fetching fare estimates:', error);
+                alert('Error fetching fare estimates. Please try again.');
+            }
+        }
+
+        // Function to update fare estimates in the UI
+        function updateFareEstimates(estimates) {
+            console.log('Updating fare estimates:', estimates);
+            
+            // Update bike fare
+            if (estimates.bike) {
+                console.log('Updating bike fare:', estimates.bike);
+                const bikeOption = document.getElementById('bike-option');
+                const fareElement = bikeOption.querySelector('.fare-estimate');
+                fareElement.textContent = `₹${Math.round(estimates.bike)}`;
+                bikeOption.style.display = 'flex';
+            }
+
+            // Update auto fare
+            if (estimates.auto) {
+                console.log('Updating auto fare:', estimates.auto);
+                const autoOption = document.getElementById('auto-option');
+                const fareElement = autoOption.querySelector('.fare-estimate');
+                fareElement.textContent = `₹${Math.round(estimates.auto)}`;
+                autoOption.style.display = 'flex';
+            }
+
+            // Update mini fare (check both mini and cabeconomy)
+            const miniFare = estimates.mini || estimates.cabeconomy;
+            if (miniFare) {
+                console.log('Updating mini fare:', miniFare);
+                const miniOption = document.getElementById('mini-option');
+                const fareElement = miniOption.querySelector('.fare-estimate');
+                fareElement.textContent = `₹${Math.round(miniFare)}`;
+                miniOption.style.display = 'flex';
+            } else {
+                console.log('No mini fare found in estimates. Available estimates:', Object.keys(estimates));
+            }
+        }
+    </script>
+</body>
+</html>

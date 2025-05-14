@@ -1,0 +1,902 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FareHunt - Compare Fares</title>
+    <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer" 
+    />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+            color: #333;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .header {
+            position: relative;
+            background: linear-gradient(135deg, #1a237e 0%, #0d47a1 100%);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: white;
+            animation: fadeInDown 0.5s ease-out;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 15px;
+            margin-right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px;
+            border-radius: 25px;
+            backdrop-filter: blur(5px);
+        }
+
+        .radio-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .radio-group:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .radio-group input[type="radio"] {
+            margin: 0;
+            cursor: pointer;
+            accent-color: #fff;
+        }
+
+        .radio-group input[type="radio"]:checked + label {
+            font-weight: 600;
+        }
+
+        .location-display {
+            padding: 20px;
+            background: white;
+            margin: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            animation: fadeInUp 0.5s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .location-display h2 {
+            color: #1a237e;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .location-display p {
+            color: #555;
+            margin: 8px 0;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-display p::before {
+            content: '📍';
+            font-size: 18px;
+        }
+
+        .fare-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+            transition: opacity 0.3s ease;
+        }
+
+        .fare-cards.loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .fare-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+            width: 180px;
+            height: 220px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .fare-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1a237e, #0d47a1);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .fare-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .fare-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .vehicle-image {
+            width: 80px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .fare-card:hover .vehicle-image {
+            transform: scale(1.1);
+        }
+
+        .vehicle-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+        }
+
+        .fare-details {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            flex: 1;
+            justify-content: space-between;
+        }
+
+        .vehicle-type {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a237e;
+            text-align: center;
+            margin: 5px 0;
+        }
+
+        .price {
+            font-size: 22px;
+            font-weight: bold;
+            color: #0d47a1;
+            margin: 8px 0;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .service-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+            width: 100%;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .service-logo {
+            width: 60px;
+            height: 30px;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+        .fare-card:hover .service-logo {
+            transform: scale(1.1);
+        }
+
+        .service-name {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 18px;
+            color: #1a237e;
+            animation: pulse 1.5s infinite;
+        }
+
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #d32f2f;
+            background: #ffebee;
+            border-radius: 15px;
+            margin: 20px;
+            animation: shake 0.5s ease-in-out;
+            border: 1px solid rgba(211, 47, 47, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 600px) {
+            .header {
+                padding: 15px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .view-toggle {
+                width: 100%;
+                justify-content: center;
+                margin: 0;
+            }
+
+            .fare-cards {
+                grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .fare-card {
+                width: 160px;
+                height: 200px;
+                padding: 15px;
+            }
+
+            .vehicle-image {
+                width: 70px;
+                height: 60px;
+            }
+
+            .vehicle-type {
+                font-size: 14px;
+            }
+
+            .price {
+                font-size: 18px;
+            }
+
+            .service-logo {
+                width: 50px;
+                height: 25px;
+            }
+
+            .service-name {
+                font-size: 12px;
+            }
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1a237e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            position: absolute;
+            top: calc(50% + 40px);
+            color: #1a237e;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .view-toggle {
+            position: relative;
+        }
+
+        .view-toggle::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+        }
+
+        .radio-group {
+            position: relative;
+        }
+
+        .radio-group::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #fff;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .radio-group input[type="radio"]:checked + label + .radio-group::after {
+            transform: scaleX(1);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Updating view...</div>
+    </div>
+    <div class="header">
+        <h1>FareHunt</h1>
+        <div class="view-toggle">
+            <div class="radio-group">
+                <input type="radio" id="vehicle-based" name="view-type" value="vehicle" checked>
+                <label for="vehicle-based">Vehicle Based</label>
+            </div>
+            <div class="radio-group">
+                <input type="radio" id="service-based" name="view-type" value="service">
+                <label for="service-based">Service Based</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="location-display">
+        <h2>Selected Locations</h2>
+        <p id="pickup-location">Pickup: Loading...</p>
+        <p id="drop-location">Drop: Loading...</p>
+    </div>
+
+    <div id="loading" class="loading">Loading fare details...</div>
+    <div id="error" class="error" style="display: none;"></div>
+    <div class="fare-cards" id="fare-cards"></div>
+
+    <script>
+        // Get location from sessionStorage
+        const pickupLocation = sessionStorage.getItem('pickupLocation');
+        const dropLocation = sessionStorage.getItem('dropLocation');
+        const pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
+        const dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
+        
+        if (pickupLocation && dropLocation) {
+            document.getElementById('pickup-location').textContent = `Pickup: ${pickupLocation}`;
+            document.getElementById('drop-location').textContent = `Drop: ${dropLocation}`;
+        } else {
+            document.getElementById('pickup-location').textContent = 'Pickup: Not selected';
+            document.getElementById('drop-location').textContent = 'Drop: Not selected';
+            document.getElementById('error').style.display = 'block';
+            document.getElementById('error').textContent = 'Please select both pickup and drop locations on the map first.';
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // Function to fetch fare data from all services
+        async function fetchFareData() {
+            if (!pickupCoords || !dropCoords) {
+                return null;
+            }
+
+            try {
+                // Fetch data from all services in parallel
+                const [olaData, uberData, rapidoData] = await Promise.all([
+                    fetchOlaFares(),
+                    fetchUberFares(),
+                    fetchRapidoFares()
+                ]);
+
+                return {
+                    ola: olaData,
+                    uber: uberData,
+                    rapido: rapidoData
+                };
+            } catch (error) {
+                console.error('Error fetching fare data:', error);
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = 'Error fetching fare data. Please try again.';
+                return null;
+            }
+        }
+
+        // Function to fetch Ola fare estimates
+        async function fetchOlaFares() {
+            try {
+                const response = await fetch('http://localhost:3001/api/ola/estimate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        start_latitude: pickupCoords.lat,
+                        start_longitude: pickupCoords.lng,
+                        end_latitude: dropCoords.lat,
+                        end_longitude: dropCoords.lng
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Ola fares');
+                }
+
+                const data = await response.json();
+                return processOlaFares(data);
+            } catch (error) {
+                console.error('Error fetching Ola fares:', error);
+                // Return sample data for testing
+                return {
+                    'Auto': { price: 150, image: 'auto.png', logo: 'ola.png' },
+                    'Mini': { price: 200, image: 'mini.png', logo: 'ola.png' },
+                    'Prime Sedan': { price: 300, image: 'sedan.png', logo: 'ola.png' },
+                    'Prime SUV': { price: 400, image: 'suv.png', logo: 'ola.png' }
+                };
+            }
+        }
+
+        // Function to fetch Uber fare estimates
+        async function fetchUberFares() {
+            try {
+                const response = await fetch('http://localhost:3001/api/uber/estimate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        start_latitude: pickupCoords.lat,
+                        start_longitude: pickupCoords.lng,
+                        end_latitude: dropCoords.lat,
+                        end_longitude: dropCoords.lng
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Uber fares');
+                }
+
+                const data = await response.json();
+                return processUberFares(data);
+            } catch (error) {
+                console.error('Error fetching Uber fares:', error);
+                // Return sample data for testing
+                return {
+                    'Auto': { price: 160, image: 'auto.png', logo: 'uber.png' },
+                    'Go': { price: 210, image: 'mini.png', logo: 'uber.png' },
+                    'Premier': { price: 310, image: 'sedan.png', logo: 'uber.png' },
+                    'SUV': { price: 410, image: 'suv.png', logo: 'uber.png' }
+                };
+            }
+        }
+
+        // Function to fetch Rapido fare estimates
+        async function fetchRapidoFares() {
+            try {
+                const response = await fetch('http://localhost:3001/api/rapido/estimate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        start_latitude: pickupCoords.lat,
+                        start_longitude: pickupCoords.lng,
+                        end_latitude: dropCoords.lat,
+                        end_longitude: dropCoords.lng
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch Rapido fares');
+                }
+
+                const data = await response.json();
+                return processRapidoFares(data);
+            } catch (error) {
+                console.error('Error fetching Rapido fares:', error);
+                // Return sample data for testing
+                return {
+                    'Bike': { price: 100, image: 'bike.png', logo: 'rapido.png' },
+                    'Auto': { price: 145, image: 'auto.png', logo: 'rapido.png' },
+                    'Mini': { price: 195, image: 'mini.png', logo: 'rapido.png' },
+                    'Sedan': { price: 295, image: 'sedan.png', logo: 'rapido.png' }
+                };
+            }
+        }
+
+        // Process Ola fare data
+        function processOlaFares(data) {
+            const fares = {};
+            if (data.estimates) {
+                Object.entries(data.estimates).forEach(([vehicleType, price]) => {
+                    fares[vehicleType] = {
+                        price: Math.round(price),
+                        image: getVehicleImage(vehicleType),
+                        logo: 'ola.png'
+                    };
+                });
+            }
+            return fares;
+        }
+
+        // Process Uber fare data
+        function processUberFares(data) {
+            const fares = {};
+            if (data.estimates) {
+                Object.entries(data.estimates).forEach(([vehicleType, price]) => {
+                    fares[vehicleType] = {
+                        price: Math.round(price),
+                        image: getVehicleImage(vehicleType),
+                        logo: 'uber.png'
+                    };
+                });
+            }
+            return fares;
+        }
+
+        // Process Rapido fare data
+        function processRapidoFares(data) {
+            const fares = {};
+            if (data.estimates) {
+                Object.entries(data.estimates).forEach(([vehicleType, price]) => {
+                    fares[vehicleType] = {
+                        price: Math.round(price),
+                        image: getVehicleImage(vehicleType),
+                        logo: 'rapido.png'
+                    };
+                });
+            }
+            return fares;
+        }
+
+        // Vehicle categories with their corresponding images and display names
+        const vehicleCategories = {
+            'Auto': {
+                image: '../assets/rickshaw_icon.png',
+                displayName: 'Auto',
+                aliases: ['auto', 'rickshaw']
+            },
+            'Bike': {
+                image: '../assets/bike_icon.webp',
+                displayName: 'Bike',
+                aliases: ['bike', 'motorcycle']
+            },
+            'Mini': {
+                image: '../assets/mini_icon.png',
+                displayName: 'Mini',
+                aliases: ['mini', 'go', 'hatchback', 'cabeconomy', 'mini economy']
+            },
+            'Sedan': {
+                image: '../assets/prime_icon.png',
+                displayName: 'Sedan',
+                aliases: ['sedan', 'premier', 'prime']
+            },
+            'SUV': {
+                image: '../assets/suv_icon_2.png',
+                displayName: 'SUV',
+                aliases: ['suv', 'xl', 'prime suv']
+            }
+        };
+
+        // Helper function to get vehicle image based on category
+        function getVehicleImage(category) {
+            const categoryLower = category.toLowerCase();
+            for (const [key, value] of Object.entries(vehicleCategories)) {
+                if (value.aliases.some(alias => categoryLower.includes(alias))) {
+                    return value.image;
+                }
+            }
+            return '../assets/default_vehicle.png';
+        }
+
+        // Service configuration with logos and display names
+        const serviceConfig = {
+            'Ola': {
+                logo: '../assets/ola.png',
+                displayName: 'Ola',
+                aliases: ['ola', 'olacabs']
+            },
+            'Uber': {
+                logo: '../assets/uber.webp',
+                displayName: 'Uber',
+                aliases: ['uber', 'ubercabs']
+            },
+            'Rapido': {
+                logo: '../assets/rapido_logo.webp',
+                displayName: 'Rapido',
+                aliases: ['rapido', 'rapidocabs']
+            }
+        };
+
+        // Helper function to normalize service name
+        function normalizeServiceName(service) {
+            const serviceLower = service.toLowerCase();
+            for (const [key, value] of Object.entries(serviceConfig)) {
+                if (value.aliases.some(alias => serviceLower.includes(alias))) {
+                    return key;
+                }
+            }
+            return service;
+        }
+
+        function displayVehicleBasedFares(fareData) {
+            const cardsContainer = document.getElementById('fare-cards');
+            cardsContainer.innerHTML = '';
+
+            // Group fares by vehicle type
+            const vehicleFares = {};
+            Object.entries(fareData).forEach(([service, vehicles]) => {
+                // Normalize service name
+                const normalizedService = normalizeServiceName(service);
+                
+                Object.entries(vehicles).forEach(([vehicleType, details]) => {
+                    // Normalize vehicle type
+                    let normalizedType = normalizeVehicleType(vehicleType);
+                    
+                    if (!vehicleFares[normalizedType]) {
+                        vehicleFares[normalizedType] = [];
+                    }
+                    vehicleFares[normalizedType].push({
+                        service: normalizedService,
+                        vehicleType: normalizedType,
+                        ...details,
+                        price: Math.round(details.price)
+                    });
+                });
+            });
+
+            // Display lowest fare for each vehicle type
+            Object.entries(vehicleFares).forEach(([vehicleType, services]) => {
+                const lowestFare = services.reduce((min, current) => 
+                    current.price < min.price ? current : min
+                );
+
+                const card = document.createElement('div');
+                card.className = 'fare-card';
+                
+                const vehicleImage = vehicleCategories[vehicleType]?.image || '../assets/default_vehicle.png';
+                const serviceLogo = serviceConfig[lowestFare.service]?.logo || '../assets/default_logo.png';
+                const serviceDisplayName = serviceConfig[lowestFare.service]?.displayName || lowestFare.service;
+                
+                card.innerHTML = `
+                    <div class="vehicle-image">
+                        <img src="${vehicleImage}" alt="${vehicleType}">
+                    </div>
+                    <div class="fare-details">
+                        <div class="vehicle-type">${vehicleCategories[vehicleType]?.displayName || vehicleType}</div>
+                        <div class="price">₹${Math.round(lowestFare.price)}</div>
+                        <div class="service-info">
+                            <img src="${serviceLogo}" alt="${serviceDisplayName}" class="service-logo">
+                            <span class="service-name">${serviceDisplayName}</span>
+                        </div>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        function displayServiceBasedFares(fareData) {
+            const cardsContainer = document.getElementById('fare-cards');
+            cardsContainer.innerHTML = '';
+
+            // Find lowest fare for each service
+            Object.entries(fareData).forEach(([service, vehicles]) => {
+                const normalizedService = normalizeServiceName(service);
+                const lowestFare = Object.entries(vehicles).reduce((min, [vehicleType, details]) => {
+                    const price = Math.round(details.price);
+                    if (price < min.price) {
+                        return { 
+                            vehicleType: normalizeVehicleType(vehicleType),
+                            price: price,
+                            ...details
+                        };
+                    }
+                    return min;
+                }, { price: Infinity });
+
+                const card = document.createElement('div');
+                card.className = 'fare-card';
+                
+                const vehicleImage = vehicleCategories[lowestFare.vehicleType]?.image || '../assets/default_vehicle.png';
+                const serviceLogo = serviceConfig[normalizedService]?.logo || '../assets/default_logo.png';
+                const serviceDisplayName = serviceConfig[normalizedService]?.displayName || service;
+                
+                card.innerHTML = `
+                    <div class="vehicle-image">
+                        <img src="${vehicleImage}" alt="${lowestFare.vehicleType}">
+                    </div>
+                    <div class="fare-details">
+                        <div class="vehicle-type">${vehicleCategories[lowestFare.vehicleType]?.displayName || lowestFare.vehicleType}</div>
+                        <div class="price">₹${Math.round(lowestFare.price)}</div>
+                        <div class="service-info">
+                            <img src="${serviceLogo}" alt="${serviceDisplayName}" class="service-logo">
+                            <span class="service-name">${serviceDisplayName}</span>
+                        </div>
+                    </div>
+                `;
+                cardsContainer.appendChild(card);
+            });
+        }
+
+        // Helper function to normalize vehicle types
+        function normalizeVehicleType(type) {
+            const typeLower = type.toLowerCase();
+            for (const [key, value] of Object.entries(vehicleCategories)) {
+                if (value.aliases.some(alias => typeLower.includes(alias))) {
+                    return key;
+                }
+            }
+            return type;
+        }
+
+        // Function to show loading state
+        function showLoading() {
+            document.querySelector('.loading-overlay').classList.add('active');
+            document.querySelector('.fare-cards').classList.add('loading');
+        }
+
+        // Function to hide loading state
+        function hideLoading() {
+            document.querySelector('.loading-overlay').classList.remove('active');
+            document.querySelector('.fare-cards').classList.remove('loading');
+        }
+
+        // Function to switch views with animation
+        async function switchView(viewType) {
+            showLoading();
+            
+            try {
+                const fareData = await fetchFareData();
+                if (fareData) {
+                    // Add a small delay to show the loading animation
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                    
+                    if (viewType === 'vehicle') {
+                        displayVehicleBasedFares(fareData);
+                    } else {
+                        displayServiceBasedFares(fareData);
+                    }
+                }
+            } catch (error) {
+                console.error('Error switching views:', error);
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = 'Error updating view. Please try again.';
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Update event listeners for radio buttons
+        document.getElementById('vehicle-based').addEventListener('change', async () => {
+            if (document.getElementById('vehicle-based').checked) {
+                await switchView('vehicle');
+            }
+        });
+
+        document.getElementById('service-based').addEventListener('change', async () => {
+            if (document.getElementById('service-based').checked) {
+                await switchView('service');
+            }
+        });
+
+        // Update initializePage function
+        async function initializePage() {
+            if (pickupCoords && dropCoords) {
+                showLoading();
+                try {
+                    const fareData = await fetchFareData();
+                    if (fareData) {
+                        displayVehicleBasedFares(fareData);
+                    }
+                } catch (error) {
+                    console.error('Error initializing page:', error);
+                    document.getElementById('error').style.display = 'block';
+                    document.getElementById('error').textContent = 'Error loading fare data. Please try again.';
+                } finally {
+                    hideLoading();
+                }
+            }
+        }
+
+        // Start the page
+        initializePage();
+    </script>
+</body>
+</html> 

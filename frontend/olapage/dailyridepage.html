@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ola Ride Options</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #89cff0, #ffa69e);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .banner {
+            background: linear-gradient(135deg, #2c2c2c, #1a1a1a);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: slideDown 0.5s ease-out;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .banner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.05) 25%, transparent 25%),
+                        linear-gradient(-45deg, rgba(255,255,255,0.05) 25%, transparent 25%);
+            background-size: 20px 20px;
+            animation: movePattern 20s linear infinite;
+        }
+
+        .banner img {
+            height: 60px;
+            position: relative;
+            z-index: 1;
+            animation: pulse 2s infinite;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 25px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .header img {
+            height: 70px;
+            transition: transform 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .header img:hover {
+            transform: scale(1.15);
+        }
+
+        .menu-icon, .profile-icon {
+            font-size: 28px;
+            cursor: pointer;
+            color: #555;
+            transition: all 0.3s ease;
+        }
+
+        .menu-icon:hover, .profile-icon:hover {
+            color: #ff5722;
+            transform: scale(1.1);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #fff;
+            background: #ff5722;
+            transition: 0.3s ease, transform 0.2s ease;
+        }
+
+        .tab.active {
+            background: #8f66ce;
+            font-weight: bold;
+            transform: scale(1.1);
+        }
+
+        .tab:hover {
+            background: #e64a19;
+        }
+
+        .location-info {
+            background: #fff;
+            padding: 25px 20px;
+            position: relative;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            animation: slideUp 0.5s ease-out;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .location-info h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #000;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .location-info h3::before {
+            content: '📍';
+            font-size: 24px;
+        }
+
+        .location-info p {
+            font-size: 16px;
+            color: #333;
+            margin: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .location-info p:hover {
+            transform: translateX(5px);
+            color: #4CAF50;
+        }
+
+        .location-info p::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #4CAF50;
+            transition: all 0.3s ease;
+        }
+
+        .location-info p.pickup::before {
+            background: #4CAF50;
+        }
+
+        .location-info p.drop::before {
+            background: #fff;
+            border: 2px solid #4CAF50;
+        }
+
+        .location-info p.pickup {
+            font-weight: 500;
+            color: #000;
+        }
+
+        .location-info p.drop {
+            font-weight: 500;
+            color: #000;
+        }
+
+        .ride-options {
+            list-style: none;
+            padding: 0;
+        }
+
+        .ride-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #f4f5f7;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease-out;
+            animation-fill-mode: both;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ride-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .ride-option:hover::before {
+            transform: scaleX(1);
+        }
+
+        .ride-option:nth-child(1) { animation-delay: 0.1s; }
+        .ride-option:nth-child(2) { animation-delay: 0.2s; }
+        .ride-option:nth-child(3) { animation-delay: 0.3s; }
+        .ride-option:nth-child(4) { animation-delay: 0.4s; }
+        .ride-option:nth-child(5) { animation-delay: 0.5s; }
+
+        .ride-option:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            border-color: #4CAF50;
+        }
+
+        .ride-option img {
+            height: 50px;
+            margin-right: 20px;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .ride-option:hover img {
+            transform: scale(1.1);
+        }
+
+        .ride-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .ride-details {
+            margin-left: 10px;
+        }
+
+        .ride-details .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .ride-details .description {
+            font-size: 14px;
+            color: #555;
+        }
+
+        .make-circle {
+            border-radius: 20px;
+        }
+
+        .time {
+            font-size: 14px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        .remove-line {
+            text-decoration: none;
+        }
+
+        .fare-estimate {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4CAF50;
+            margin-left: auto;
+            padding-left: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .ride-option:hover .fare-estimate {
+            transform: scale(1.1);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes movePattern {
+            from { background-position: 0 0; }
+            to { background-position: 40px 40px; }
+        }
+
+        @media (max-width: 600px) {
+            .banner {
+                padding: 12px 15px;
+            }
+
+            .banner h2 {
+                font-size: 16px;
+            }
+
+            .banner p {
+                font-size: 12px;
+            }
+
+            .container {
+                margin: 15px;
+                padding: 20px;
+            }
+
+            .ride-option {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .ride-info {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="banner">
+            <img src="ola.png" alt="Ola Logo" class="make-circle">
+        </div>
+        <div class="header">
+            <!-- Commented out menu and profile icons
+            <a href="barpage.html" class="remove-line">
+                <div class="menu-icon">&#9776;</div>
+            </a>
+            <div class="profile-icon">&#128100;</div>
+            -->
+        </div>
+
+        <!--<div class="tabs">
+            <div class="tab active">Daily Rides</div>
+        </div>!-->
+
+        <div class="location-info">
+            <h3>Your Route</h3>
+            <p class="pickup" id="pickupLocation">Pickup: Loading...</p>
+            <p class="drop" id="dropLocation">Drop: Loading...</p>
+        </div>
+
+        <ul class="ride-options">
+            <li class="ride-option" id="auto-option">
+                <div class="ride-info">
+                    <img src="../assets/rickshaw_icon.png" alt="Auto">
+                    <div class="ride-details">
+                        <div class="title">Auto</div>
+                        <div class="description">Get an auto at your doorstep</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </li>
+            <li class="ride-option" id="mini-option">
+                <div class="ride-info">
+                    <img src="../assets/mini_icon.png" alt="Mini">
+                    <div class="ride-details">
+                        <div class="title">Mini</div>
+                        <div class="description">Comfy hatchbacks at pocket-friendly fares</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </li>
+            <li class="ride-option" id="bike-option">
+                <div class="ride-info">
+                    <img src="../assets/bike_icon.webp" alt="Bike">
+                    <div class="ride-details">
+                        <div class="title">Bike</div>
+                        <div class="description">Zip through traffic at affordable fares</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </li>
+            <li class="ride-option" id="prime-sedan-option">
+                <div class="ride-info">
+                    <img src="../assets/prime_icon.png" alt="Prime Sedan">
+                    <div class="ride-details">
+                        <div class="title">Prime Sedan</div>
+                        <div class="description">Sedans with free wifi and top drivers</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </li>
+            <li class="ride-option" id="prime-suv-option">
+                <div class="ride-info">
+                    <img src="../assets/suv_icon_2.png" alt="Prime SUV">
+                    <div class="ride-details">
+                        <div class="title">Prime SUV</div>
+                        <div class="description">SUVs with free wifi and top drivers</div>
+                    </div>
+                </div>
+                <div class="fare-estimate">-</div>
+            </li>
+        </ul>
+    </div>
+
+    <script>
+        // Add API base URL configuration
+        const API_BASE_URL = 'http://localhost:3001/api/ola';
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const pickup = sessionStorage.getItem('pickupLocation');
+            const drop = sessionStorage.getItem('dropLocation');
+            const pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
+            const dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
+            
+            console.log('Pickup Coords:', pickupCoords);
+            console.log('Drop Coords:', dropCoords);
+            
+            if (pickup && drop) {
+                document.getElementById('pickupLocation').textContent = 'Pickup: ' + pickup;
+                document.getElementById('dropLocation').textContent = 'Drop: ' + drop;
+                
+                // Fetch fare estimates from backend using olaRoutes
+                fetch(`${API_BASE_URL}/estimate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        start_latitude: pickupCoords.lat,
+                        start_longitude: pickupCoords.lng,
+                        end_latitude: dropCoords.lat,
+                        end_longitude: dropCoords.lng
+                    })
+                })
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Received data:', data);
+                    if (data.service === 'ola') {
+                        console.log('Estimates:', data.estimates);
+                        
+                        // Calculate prices based on distance and duration
+                        const distance = parseFloat(data.distance);
+                        const durationMinutes = parseFloat(data.duration);
+                        
+                        // Update Ola vehicle prices with calculated values
+                        const updatePrice = (elementId, vehicleType) => {
+                            const element = document.querySelector(`#${elementId} .fare-estimate`);
+                            if (element) {
+                                const basePrice = {
+                                    'auto': 25,
+                                    'mini': 35,
+                                    'bike': 15,
+                                    'primesedan': 55,
+                                    'primesuv': 65
+                                }[vehicleType];
+                                
+                                const perKmPrice = {
+                                    'auto': 9,
+                                    'mini': 11,
+                                    'bike': 7,
+                                    'primesedan': 16,
+                                    'primesuv': 20
+                                }[vehicleType];
+                                
+                                const perMinPrice = {
+                                    'auto': 0.9,
+                                    'mini': 1.1,
+                                    'bike': 0.7,
+                                    'primesedan': 1.6,
+                                    'primesuv': 2.0
+                                }[vehicleType];
+                                
+                                const minFare = {
+                                    'auto': 45,
+                                    'mini': 55,
+                                    'bike': 25,
+                                    'primesedan': 85,
+                                    'primesuv': 100
+                                }[vehicleType];
+                                
+                                const price = Math.max(
+                                    basePrice + (perKmPrice * distance) + (perMinPrice * durationMinutes),
+                                    minFare
+                                );
+                                
+                                element.textContent = `₹${Math.round(price)}`;
+                            }
+                        };
+
+                        // Update prices for each vehicle type
+                        updatePrice('auto-option', 'auto');
+                        updatePrice('mini-option', 'mini');
+                        updatePrice('bike-option', 'bike');
+                        updatePrice('prime-sedan-option', 'primesedan');
+                        updatePrice('prime-suv-option', 'primesuv');
+
+                        // Update time estimates
+                        const timeEstimate = Math.ceil(durationMinutes);
+                        document.querySelectorAll('.ride-option').forEach(option => {
+                            const timeEstimateElement = document.createElement('div');
+                            timeEstimateElement.className = 'time-estimate';
+                            timeEstimateElement.textContent = `~${timeEstimate} mins away`;
+                            option.querySelector('.ride-details').appendChild(timeEstimateElement);
+                        });
+
+                        // Add click handlers for booking
+                        const rideOptions = document.querySelectorAll('.ride-option');
+                        rideOptions.forEach(option => {
+                            option.addEventListener('click', function() {
+                                const vehicleType = this.id.split('-')[0];
+                                bookRide(vehicleType);
+                            });
+                        });
+                    } else {
+                        console.error('Invalid response format:', data);
+                        throw new Error('Invalid response format from server');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching estimates:', error);
+                    // Fallback to exact prices if API fails
+                    document.querySelector('#auto-option .fare-estimate').textContent = '₹175';
+                    document.querySelector('#mini-option .fare-estimate').textContent = '₹225';
+                    document.querySelector('#bike-option .fare-estimate').textContent = '₹125';
+                    document.querySelector('#prime-sedan-option .fare-estimate').textContent = '₹325';
+                    document.querySelector('#prime-suv-option .fare-estimate').textContent = '₹425';
+                });
+            } else {
+                alert('Location data not found. Please select locations from the main page.');
+                window.location.href = '../mainPage/hello.html';
+            }
+        });
+
+        function bookRide(vehicleType) {
+            const pickup = sessionStorage.getItem('pickupLocation');
+            const drop = sessionStorage.getItem('dropLocation');
+            const pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
+            const dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
+
+            // Validate vehicle type
+            const validTypes = ['auto', 'mini', 'bike', 'primesedan', 'primesuv'];
+            if (!validTypes.includes(vehicleType)) {
+                alert('Invalid vehicle type selected');
+                return;
+            }
+
+            fetch(`${API_BASE_URL}/book`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    user_id: sessionStorage.getItem('userId') || 'guest',
+                    vehicleType: vehicleType,
+                    pickup_location: `${pickupCoords.lat},${pickupCoords.lng}`,
+                    drop_location: `${dropCoords.lat},${dropCoords.lng}`
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'confirmed') {
+                    // Store booking details in session storage
+                    sessionStorage.setItem('bookingId', data.booking_id);
+                    sessionStorage.setItem('olaBookingId', data.ola_booking_id);
+                    sessionStorage.setItem('bookingPrice', data.price);
+                    sessionStorage.setItem('bookingVehicleType', vehicleType);
+                    sessionStorage.setItem('bookingPickup', pickup);
+                    sessionStorage.setItem('bookingDrop', drop);
+                    
+                    // Redirect to booking confirmation page
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert('Failed to create booking. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating booking:', error);
+                alert('Failed to create booking. Please try again.');
+            });
+        }
+    </script>
+</body>
+</html>
