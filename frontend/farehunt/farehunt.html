@@ -520,16 +520,11 @@
                 }
 
                 const data = await response.json();
+                console.log('Ola API Response:', data); // Debug log
                 return processOlaFares(data);
             } catch (error) {
                 console.error('Error fetching Ola fares:', error);
-                // Return sample data for testing
-                return {
-                    'Auto': { price: 150, image: 'auto.png', logo: 'ola.png' },
-                    'Mini': { price: 200, image: 'mini.png', logo: 'ola.png' },
-                    'Prime Sedan': { price: 300, image: 'sedan.png', logo: 'ola.png' },
-                    'Prime SUV': { price: 400, image: 'suv.png', logo: 'ola.png' }
-                };
+                return null;
             }
         }
 
@@ -554,16 +549,11 @@
                 }
 
                 const data = await response.json();
+                console.log('Uber API Response:', data); // Debug log
                 return processUberFares(data);
             } catch (error) {
                 console.error('Error fetching Uber fares:', error);
-                // Return sample data for testing
-                return {
-                    'Auto': { price: 160, image: 'auto.png', logo: 'uber.png' },
-                    'Go': { price: 210, image: 'mini.png', logo: 'uber.png' },
-                    'Premier': { price: 310, image: 'sedan.png', logo: 'uber.png' },
-                    'SUV': { price: 410, image: 'suv.png', logo: 'uber.png' }
-                };
+                return null;
             }
         }
 
@@ -588,16 +578,11 @@
                 }
 
                 const data = await response.json();
+                console.log('Rapido API Response:', data); // Debug log
                 return processRapidoFares(data);
             } catch (error) {
                 console.error('Error fetching Rapido fares:', error);
-                // Return sample data for testing
-                return {
-                    'Bike': { price: 100, image: 'bike.png', logo: 'rapido.png' },
-                    'Auto': { price: 145, image: 'auto.png', logo: 'rapido.png' },
-                    'Mini': { price: 195, image: 'mini.png', logo: 'rapido.png' },
-                    'Sedan': { price: 295, image: 'sedan.png', logo: 'rapido.png' }
-                };
+                return null;
             }
         }
 
@@ -605,14 +590,17 @@
         function processOlaFares(data) {
             const fares = {};
             if (data.estimates) {
+                // Use the exact estimates from Ola's API
                 Object.entries(data.estimates).forEach(([vehicleType, price]) => {
-                    fares[vehicleType] = {
-                        price: Math.round(price),
-                        image: getVehicleImage(vehicleType),
-                        logo: 'ola.png'
+                    const normalizedType = normalizeVehicleType(vehicleType);
+                    fares[normalizedType] = {
+                        price: parseFloat(price),
+                        image: getVehicleImage(normalizedType),
+                        logo: '../assets/ola.png'
                     };
                 });
             }
+            console.log('Processed Ola Fares:', fares); // Debug log
             return fares;
         }
 
@@ -620,14 +608,17 @@
         function processUberFares(data) {
             const fares = {};
             if (data.estimates) {
+                // Use the exact estimates from Uber's API
                 Object.entries(data.estimates).forEach(([vehicleType, price]) => {
-                    fares[vehicleType] = {
-                        price: Math.round(price),
-                        image: getVehicleImage(vehicleType),
-                        logo: 'uber.png'
+                    const normalizedType = normalizeVehicleType(vehicleType);
+                    fares[normalizedType] = {
+                        price: parseFloat(price),
+                        image: getVehicleImage(normalizedType),
+                        logo: '../assets/uber.webp'
                     };
                 });
             }
+            console.log('Processed Uber Fares:', fares); // Debug log
             return fares;
         }
 
@@ -635,14 +626,17 @@
         function processRapidoFares(data) {
             const fares = {};
             if (data.estimates) {
+                // Use the exact estimates from Rapido's API
                 Object.entries(data.estimates).forEach(([vehicleType, price]) => {
-                    fares[vehicleType] = {
-                        price: Math.round(price),
-                        image: getVehicleImage(vehicleType),
-                        logo: 'rapido.png'
+                    const normalizedType = normalizeVehicleType(vehicleType);
+                    fares[normalizedType] = {
+                        price: parseFloat(price),
+                        image: getVehicleImage(normalizedType),
+                        logo: '../assets/rapido_logo.webp'
                     };
                 });
             }
+            console.log('Processed Rapido Fares:', fares); // Debug log
             return fares;
         }
 
@@ -716,6 +710,17 @@
             return service;
         }
 
+        // Helper function to normalize vehicle type
+        function normalizeVehicleType(type) {
+            const typeLower = type.toLowerCase();
+            for (const [key, value] of Object.entries(vehicleCategories)) {
+                if (value.aliases.some(alias => typeLower.includes(alias))) {
+                    return key;
+                }
+            }
+            return type;
+        }
+
         function displayVehicleBasedFares(fareData) {
             const cardsContainer = document.getElementById('fare-cards');
             cardsContainer.innerHTML = '';
@@ -723,48 +728,47 @@
             // Group fares by vehicle type
             const vehicleFares = {};
             Object.entries(fareData).forEach(([service, vehicles]) => {
-                // Normalize service name
                 const normalizedService = normalizeServiceName(service);
-                
                 Object.entries(vehicles).forEach(([vehicleType, details]) => {
-                    // Normalize vehicle type
-                    let normalizedType = normalizeVehicleType(vehicleType);
-                    
+                    const normalizedType = normalizeVehicleType(vehicleType);
                     if (!vehicleFares[normalizedType]) {
                         vehicleFares[normalizedType] = [];
                     }
                     vehicleFares[normalizedType].push({
                         service: normalizedService,
                         vehicleType: normalizedType,
-                        ...details,
-                        price: Math.round(details.price)
+                        price: parseFloat(details.price),
+                        image: details.image,
+                        logo: details.logo
                     });
                 });
             });
 
+            console.log('Grouped Vehicle Fares:', vehicleFares); // Debug log
+
             // Display lowest fare for each vehicle type
             Object.entries(vehicleFares).forEach(([vehicleType, services]) => {
-                const lowestFare = services.reduce((min, current) => 
-                    current.price < min.price ? current : min
-                );
+                // Find the service with the lowest price for this vehicle type
+                const lowestFare = services.reduce((min, current) => {
+                    const currentPrice = parseFloat(current.price);
+                    const minPrice = parseFloat(min.price);
+                    return currentPrice < minPrice ? current : min;
+                });
+
+                console.log(`Lowest fare for ${vehicleType}:`, lowestFare); // Debug log
 
                 const card = document.createElement('div');
                 card.className = 'fare-card';
-                
-                const vehicleImage = vehicleCategories[vehicleType]?.image || '../assets/default_vehicle.png';
-                const serviceLogo = serviceConfig[lowestFare.service]?.logo || '../assets/default_logo.png';
-                const serviceDisplayName = serviceConfig[lowestFare.service]?.displayName || lowestFare.service;
-                
                 card.innerHTML = `
                     <div class="vehicle-image">
-                        <img src="${vehicleImage}" alt="${vehicleType}">
+                        <img src="${lowestFare.image}" alt="${vehicleType}">
                     </div>
                     <div class="fare-details">
-                        <div class="vehicle-type">${vehicleCategories[vehicleType]?.displayName || vehicleType}</div>
+                        <div class="vehicle-type">${vehicleType}</div>
                         <div class="price">₹${Math.round(lowestFare.price)}</div>
                         <div class="service-info">
-                            <img src="${serviceLogo}" alt="${serviceDisplayName}" class="service-logo">
-                            <span class="service-name">${serviceDisplayName}</span>
+                            <img src="${lowestFare.logo}" alt="${lowestFare.service}" class="service-logo">
+                            <div class="service-name">${lowestFare.service}</div>
                         </div>
                     </div>
                 `;
@@ -780,12 +784,14 @@
             Object.entries(fareData).forEach(([service, vehicles]) => {
                 const normalizedService = normalizeServiceName(service);
                 const lowestFare = Object.entries(vehicles).reduce((min, [vehicleType, details]) => {
-                    const price = Math.round(details.price);
-                    if (price < min.price) {
+                    const normalizedType = normalizeVehicleType(vehicleType);
+                    if (details.price < min.price) {
                         return { 
-                            vehicleType: normalizeVehicleType(vehicleType),
-                            price: price,
-                            ...details
+                            vehicleType: normalizedType,
+                            price: details.price,
+                            image: details.image,
+                            logo: details.logo,
+                            service: normalizedService
                         };
                     }
                     return min;
@@ -793,37 +799,21 @@
 
                 const card = document.createElement('div');
                 card.className = 'fare-card';
-                
-                const vehicleImage = vehicleCategories[lowestFare.vehicleType]?.image || '../assets/default_vehicle.png';
-                const serviceLogo = serviceConfig[normalizedService]?.logo || '../assets/default_logo.png';
-                const serviceDisplayName = serviceConfig[normalizedService]?.displayName || service;
-                
                 card.innerHTML = `
                     <div class="vehicle-image">
-                        <img src="${vehicleImage}" alt="${lowestFare.vehicleType}">
+                        <img src="${lowestFare.image}" alt="${lowestFare.vehicleType}">
                     </div>
                     <div class="fare-details">
-                        <div class="vehicle-type">${vehicleCategories[lowestFare.vehicleType]?.displayName || lowestFare.vehicleType}</div>
+                        <div class="vehicle-type">${lowestFare.vehicleType}</div>
                         <div class="price">₹${Math.round(lowestFare.price)}</div>
                         <div class="service-info">
-                            <img src="${serviceLogo}" alt="${serviceDisplayName}" class="service-logo">
-                            <span class="service-name">${serviceDisplayName}</span>
+                            <img src="${lowestFare.logo}" alt="${lowestFare.service}" class="service-logo">
+                            <div class="service-name">${lowestFare.service}</div>
                         </div>
                     </div>
                 `;
                 cardsContainer.appendChild(card);
             });
-        }
-
-        // Helper function to normalize vehicle types
-        function normalizeVehicleType(type) {
-            const typeLower = type.toLowerCase();
-            for (const [key, value] of Object.entries(vehicleCategories)) {
-                if (value.aliases.some(alias => typeLower.includes(alias))) {
-                    return key;
-                }
-            }
-            return type;
         }
 
         // Function to show loading state

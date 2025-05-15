@@ -440,7 +440,7 @@
                 </div>
                 <div class="fare-estimate">-</div>
             </li>
-            <li class="ride-option" id="prime-sedan-option">
+            <li class="ride-option" id="primesedan-option">
                 <div class="ride-info">
                     <img src="../assets/prime_icon.png" alt="Prime Sedan">
                     <div class="ride-details">
@@ -450,7 +450,7 @@
                 </div>
                 <div class="fare-estimate">-</div>
             </li>
-            <li class="ride-option" id="prime-suv-option">
+            <li class="ride-option" id="primesuv-option">
                 <div class="ride-info">
                     <img src="../assets/suv_icon_2.png" alt="Prime SUV">
                     <div class="ride-details">
@@ -507,64 +507,31 @@
                     if (data.service === 'ola') {
                         console.log('Estimates:', data.estimates);
                         
-                        // Calculate prices based on distance and duration
-                        const distance = parseFloat(data.distance);
-                        const durationMinutes = parseFloat(data.duration);
-                        
-                        // Update Ola vehicle prices with calculated values
-                        const updatePrice = (elementId, vehicleType) => {
-                            const element = document.querySelector(`#${elementId} .fare-estimate`);
-                            if (element) {
-                                const basePrice = {
-                                    'auto': 25,
-                                    'mini': 35,
-                                    'bike': 15,
-                                    'primesedan': 55,
-                                    'primesuv': 65
-                                }[vehicleType];
+                        // Use the estimates directly from the API response
+                        if (data.estimates) {
+                            // Update prices for each vehicle type using API estimates
+                            Object.entries(data.estimates).forEach(([vehicleType, price]) => {
+                                // Map vehicle types to element IDs
+                                const elementIdMap = {
+                                    'auto': 'auto-option',
+                                    'mini': 'mini-option',
+                                    'bike': 'bike-option',
+                                    'primesedan': 'primesedan-option',
+                                    'primesuv': 'primesuv-option'
+                                };
                                 
-                                const perKmPrice = {
-                                    'auto': 9,
-                                    'mini': 11,
-                                    'bike': 7,
-                                    'primesedan': 16,
-                                    'primesuv': 20
-                                }[vehicleType];
-                                
-                                const perMinPrice = {
-                                    'auto': 0.9,
-                                    'mini': 1.1,
-                                    'bike': 0.7,
-                                    'primesedan': 1.6,
-                                    'primesuv': 2.0
-                                }[vehicleType];
-                                
-                                const minFare = {
-                                    'auto': 45,
-                                    'mini': 55,
-                                    'bike': 25,
-                                    'primesedan': 85,
-                                    'primesuv': 100
-                                }[vehicleType];
-                                
-                                const price = Math.max(
-                                    basePrice + (perKmPrice * distance) + (perMinPrice * durationMinutes),
-                                    minFare
-                                );
-                                
-                                element.textContent = `₹${Math.round(price)}`;
-                            }
-                        };
-
-                        // Update prices for each vehicle type
-                        updatePrice('auto-option', 'auto');
-                        updatePrice('mini-option', 'mini');
-                        updatePrice('bike-option', 'bike');
-                        updatePrice('prime-sedan-option', 'primesedan');
-                        updatePrice('prime-suv-option', 'primesuv');
+                                const elementId = elementIdMap[vehicleType];
+                                if (elementId) {
+                                    const element = document.querySelector(`#${elementId} .fare-estimate`);
+                                    if (element) {
+                                        element.textContent = `₹${Math.round(price)}`;
+                                    }
+                                }
+                            });
+                        }
 
                         // Update time estimates
-                        const timeEstimate = Math.ceil(durationMinutes);
+                        const timeEstimate = Math.ceil(parseFloat(data.duration));
                         document.querySelectorAll('.ride-option').forEach(option => {
                             const timeEstimateElement = document.createElement('div');
                             timeEstimateElement.className = 'time-estimate';
@@ -587,12 +554,10 @@
                 })
                 .catch(error => {
                     console.error('Error fetching estimates:', error);
-                    // Fallback to exact prices if API fails
-                    document.querySelector('#auto-option .fare-estimate').textContent = '₹175';
-                    document.querySelector('#mini-option .fare-estimate').textContent = '₹225';
-                    document.querySelector('#bike-option .fare-estimate').textContent = '₹125';
-                    document.querySelector('#prime-sedan-option .fare-estimate').textContent = '₹325';
-                    document.querySelector('#prime-suv-option .fare-estimate').textContent = '₹425';
+                    // Show error message instead of fallback prices
+                    document.querySelectorAll('.fare-estimate').forEach(element => {
+                        element.textContent = 'Error';
+                    });
                 });
             } else {
                 alert('Location data not found. Please select locations from the main page.');

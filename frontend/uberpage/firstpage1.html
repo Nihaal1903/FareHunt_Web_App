@@ -685,12 +685,10 @@
                 })
                 .catch(error => {
                     console.error('Error fetching estimates:', error);
-                    // Fallback to simulated prices if API fails
-                    document.querySelector('#auto-option .fare-estimate').textContent = '₹150-200';
-                    document.querySelector('#ubergo-option .fare-estimate').textContent = '₹200-250';
-                    document.querySelector('#sedan-option .fare-estimate').textContent = '₹300-350';
-                    document.querySelector('#xl-option .fare-estimate').textContent = '₹400-450';
-                    document.querySelector('#bike-option .fare-estimate').textContent = '₹100-150';
+                    // Show error message instead of fallback prices
+                    document.querySelectorAll('.fare-estimate').forEach(element => {
+                        element.textContent = 'Error';
+                    });
                 });
             } else {
                 alert('Location data not found. Please select locations from the main page.');
