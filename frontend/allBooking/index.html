@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FareHunt | All Bookings</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      background: linear-gradient(to bottom, #f0f8ff, #add8e6);
+      color: #333;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px 20px;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      margin: 0 auto;
+    }
+
+    .back-btn {
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .back-btn:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    th, td {
+      padding: 16px;
+      text-align: left;
+    }
+
+    th {
+      background: #d0eaff;
+      color: #0047ab;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8f9fa;
+    }
+
+    tr:hover {
+      background-color: #e6f2ff;
+    }
+
+    td.status {
+      font-weight: bold;
+    }
+
+    .status.confirmed {
+      color: #2e7d32;
+    }
+
+    .status.cancelled {
+      color: #c62828;
+    }
+
+    .status.pending {
+      color: #f9a825;
+    }
+
+    @media (max-width: 600px) {
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      th, td {
+        padding: 10px;
+      }
+
+      tr {
+        margin-bottom: 15px;
+        border-bottom: 1px solid #ccc;
+      }
+
+      th {
+        background-color: transparent;
+        color: #0047ab;
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+    <script type="module">
+    
+      import { BASE_URL } from '../config/main.js';
+        (async function() {
+        const token = sessionStorage.getItem('farehunt_token');
+        if (!token) {
+            window.location.href = "../login/index.html";
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/auth/verify-token`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+            });
+            const data = await response.json();
+            if (!response.ok || !data.valid) {
+            sessionStorage.removeItem('farehunt_token');
+            window.location.href = "../login/index.html";
+            }
+            // else: token is valid, continue loading the page
+        } catch (err) {
+            sessionStorage.removeItem('farehunt_token');
+            window.location.href = "../login/index.html";
+        }
+      })();
+    </script>
+
+
+
+
+
+  <header>
+    <a class="back-btn" href="../uberpage/menuPage.html"><i class="fas fa-arrow-left"></i> Back</a>
+    <h1>All Bookings</h1>
+    <div style="width: 40px;"></div> <!-- spacer -->
+  </header>
+
+  <div class="container">
+    <table id="bookingsTable">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Pickup</th>
+          <th>Drop</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <script type="module">
+
+    // const BASE_URL = 'http://localhost:3001'; // Update with your API base URL
+    import { BASE_URL } from '../config/main.js';
+
+    const token = sessionStorage.getItem('farehunt_token');
+
+    fetch(`${BASE_URL}/api/allBooking`, {
+      method: 'GET',
+      headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success && data.booking) {
+        const tbody = document.querySelector('#bookingsTable tbody');
+        data.booking.forEach(booking => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${booking.service_provider}</td>
+            <td>${booking.pickup_location}</td>
+            <td>${booking.drop_location}</td>
+            <td>${new Date(booking.booking_time).toLocaleString()}</td>
+            <td class="status ${booking.status.toLowerCase()}">${booking.status}</td>
+            <td>₹${parseFloat(booking.price).toFixed(2)}</td>
+          `;
+          tbody.appendChild(row);
+        });
+      } else {
+        alert("No bookings found.");
+      }
+    })
+    .catch(err => {
+      console.error('Failed to load bookings:', err);
+    });
+  </script>
+</body>
+</html>

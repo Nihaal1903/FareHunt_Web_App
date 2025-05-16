@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FareHunt</title>
+    <link 
+        rel="stylesheet" 
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" 
+        crossorigin="anonymous" 
+        referrerpolicy="no-referrer" 
+    />
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+    <link 
+        rel="stylesheet" 
+        href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.css" 
+        type="text/css"
+  />
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+            color: #333;
+            overflow-x: hidden;
+            
+        }
+
+        .header {
+            position: relative;
+            background: linear-gradient(to right, #42a5f5, #1e88e5);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            transition: background-color 0.3s ease;
+            font-family: 'Open Sans', sans-serif;
+        }
+
+        .header:hover {
+            background: linear-gradient(to right, #1e88e5, #0d47a1);
+        }
+
+        .header span {
+           font-size: 18px;
+           display: flex;
+           align-items: center;
+           gap: 5px;
+        }
+
+        .header .profile-btn {
+            text-decoration: none;
+            padding: 8px 12px;
+            background: linear-gradient(to right, #ffeb3b, #ffc107);
+            color: #333;
+            font-size: 14px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .header .profile-btn:hover {
+            background: linear-gradient(to right, #ffc107, #ff9800);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+    .header .profile-btn i {
+       font-size: 16px;
+    }
+
+        .header img {
+            width: 28px;
+            height: 28px;
+        }
+
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 64vh;
+            
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .map-container:hover {
+            transform: scale(1.0);
+        }
+
+        .map-container iframe {
+            border-radius: 10px;
+            width: 98%;
+            height: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            margin-top: 15px;
+            border: none;
+        }
+
+
+
+        .route-details {
+            padding: 20px;
+            background: linear-gradient(to top, #ffffff, #f5f5f5);
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin: 20px;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .route-details h3 {
+            margin: 0 0 15px;
+            color: #1976d2;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .route-details .info {
+            margin: 10px 0;
+            color: #555;
+            font-size: 15px;
+        }
+
+        .input-box {
+            margin: 10px 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            background: white;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .input-box:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .input-box img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .input-field {
+            border: none;
+            outline: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: space-evenly;
+            margin-top: 10px;
+        }
+
+        .buttons a {
+           text-decoration: none;
+           padding: 12px 10px; /* Reduced padding for smaller size */
+           border-radius: 8px;
+           color: white;
+           text-align: center;
+           flex: 1; /* Adjust flex property to distribute evenly */
+           margin: 5px; /* Added consistent margin */
+           display: flex;
+           align-items: center;
+           gap: 10px; /* Adjusted spacing between icon and text */
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+           transition: transform 0.3s ease, box-shadow 0.3s ease;
+           font-size: 14px; /* Reduced font size */
+}
+
+        .buttons a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .buttons a.ola {
+            background: linear-gradient(to right, #ffeb3b, #ffc107);
+        }
+
+        .buttons a.uber {
+            background: linear-gradient(to right, #424242, #000);
+        }
+
+        .buttons a.farehunt {
+            background: linear-gradient(to right, #42a5f5, #1e88e5);
+        }
+        .buttons a.rapido {
+            background: linear-gradient(to right, #ff8c00, #ff5722);
+        }
+        
+
+        .buttons a img {
+            width: 30px;
+            height: 25px;
+        }
+
+        .location-options {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+        }
+
+        .location-options .options-container {
+            background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+            margin: 100px auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .location-options .option {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .location-options .option:hover {
+            background-color: #f0f0f0;
+        }
+
+        .location-options .option:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .buttons a {
+                padding: 8px 12px;
+                font-size: 14px;
+                flex: 0 0 32%;
+            }
+        }
+
+        footer {
+            background: linear-gradient(to right, #1976d2, #0d47a1);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.2);
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+
+        footer a {
+            color: #ffeb3b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+        .location-display {
+            background: white;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+    </style>
+    <script src="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v4.1.0/mapbox-gl-directions.js"></script>
+  </head>
+  
+  <body>
+
+    <!-- login verification -->
+    <script type="module">
+      import { BASE_URL } from '../config/main.js';
+
+
+      (async function() {
+      const token = sessionStorage.getItem('farehunt_token');
+      if (!token) {
+          window.location.href = "../login/index.html";
+          return;
+      }
+
+      try {
+          const response = await fetch(`${BASE_URL}/auth/verify-token`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+          }
+          });
+          const data = await response.json();
+          if (!response.ok || !data.valid) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login/index.html";
+          }
+          // else: token is valid, continue loading the page
+      } catch (err) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login/index.html";
+      }
+      })();
+    </script>
+
+
+
+    <!-- Header -->
+    <div class="header">
+      <span><i class="fa-solid fa-map"></i> Map Page</span>
+      <a href="../uberpage/menuPage.html" class="profile-btn">
+        <i class="fa-solid fa-user"></i> Profile
+      </a>
+    </div>
+  
+    <!-- Map Container -->
+    <div class="map-container">
+    
+      <iframe id="mainMap" src="../map/map-page.html" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+  
+    <!-- Location Display -->
+    <div class="location-display">
+      <h3>Selected Locations</h3>
+      <div class="info" id="pickupLocation">Pickup: Not selected</div>
+      <div class="info" id="dropLocation">Drop: Not selected</div>
+    </div>
+  
+    <!-- Ride Options -->
+    <div class="buttons">
+      <a href="#" class="ola" onclick="navigateToService('ola')">
+        <img src="../olapage/ola.png" alt="Ola"> Ola
+      </a>
+      <a href="#" class="uber" onclick="navigateToService('uber')">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="Uber"> Uber
+      </a>
+      <a href="#" class="rapido" onclick="navigateToService('rapido')">
+        <img src="../mainPage/rapido_logo.webp" alt="Rapido"> Rapido
+      </a>
+      <a href="../farehunt/farehunt.html" class="farehunt">
+        <img src="../assets/Farehunt logo.png" alt="FareHunt"> FareHunt
+      </a>
+    </div>
+  
+    <!-- JS Logic -->
+    <script>
+      // Receive location update from iframe
+      window.addEventListener("message", function (event) {
+  if (event.origin !== window.location.origin) {
+    console.warn("Message received from unknown origin:", event.origin);
+    return;
+  }
+
+  console.log("Message received from iframe:", event.data); // Debugging log
+
+  const { pickup, drop, pickupLat, pickupLng, dropLat, dropLng } = event.data;
+
+  if (pickup && drop && pickupLat && pickupLng && dropLat && dropLng) {
+    document.getElementById("pickupLocation").textContent = `Pickup: ${pickup}`;
+    document.getElementById("dropLocation").textContent = `Drop: ${drop}`;
+
+    sessionStorage.setItem("pickupLocation", pickup);
+    sessionStorage.setItem("dropLocation", drop);
+    sessionStorage.setItem("pickupCoords", JSON.stringify({ lat: pickupLat, lng: pickupLng }));
+    sessionStorage.setItem("dropCoords", JSON.stringify({ lat: dropLat, lng: dropLng }));
+  } else {
+    console.warn("Incomplete data received:", event.data);
+  }
+});
+
+      function navigateToService(service) {
+        const pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
+        const dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
+        const pickupLocation = sessionStorage.getItem('pickupLocation');
+        const dropLocation = sessionStorage.getItem('dropLocation');
+  
+        if (!pickupCoords || !dropCoords || !pickupLocation || !dropLocation) {
+          alert('Please select both pickup and drop locations on the map first.');
+          return;
+        }
+  
+        // Store in sessionStorage for service pages
+        sessionStorage.setItem('service', service);
+        sessionStorage.setItem('pickupCoords', JSON.stringify(pickupCoords));
+        sessionStorage.setItem('dropCoords', JSON.stringify(dropCoords));
+        sessionStorage.setItem('pickupLocation', pickupLocation);
+        sessionStorage.setItem('dropLocation', dropLocation);
+  
+        // Redirect to corresponding service page
+        switch (service) {
+          case 'uber':
+            window.location.href = '../uberpage/firstpage1.html';
+            break;
+          case 'ola':
+            window.location.href = '../olapage/dailyridepage.html';
+            break;
+          case 'rapido':
+            window.location.href = '../RapidoPage/MainPage.html';
+            break;
+        }
+      }
+
+      // Check for existing location data on page load
+      document.addEventListener('DOMContentLoaded', function() {
+        const pickupLocation = sessionStorage.getItem('pickupLocation');
+        const dropLocation = sessionStorage.getItem('dropLocation');
+        
+        if (pickupLocation && dropLocation) {
+          document.getElementById("pickupLocation").textContent = `Pickup: ${pickupLocation}`;
+          document.getElementById("dropLocation").textContent = `Drop: ${dropLocation}`;
+        }
+      });
+    </script>
+  </body>
+  </html>

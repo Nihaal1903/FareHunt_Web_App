@@ -22,11 +22,27 @@ const uberRoutes = require('./routes/uberRoutes');
 const olaRoutes = require('./routes/olaRoutes');
 const rapidoRoutes = require('./routes/rapidoRoutes');
 const bookingRoutes = require('./routes/bookingRoutes');
+<<<<<<< HEAD
+=======
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const urlRoutes = require('./routes/urlRoutes');
+const fareRoutes = require('./routes/farehuntRoutes');
+
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
 
 app.use('/api/uber', uberRoutes);
 app.use('/api/ola', olaRoutes);
 app.use('/api/rapido', rapidoRoutes);
 app.use('/api', bookingRoutes);
+<<<<<<< HEAD
+=======
+app.use('/api', urlRoutes);
+app.use('/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/farehunt', fareRoutes);
+
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
 
 // Start server
 const PORT = process.env.PORT || 3001;

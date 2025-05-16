@@ -405,6 +405,44 @@
     </style>
 </head>
 <body>
+<<<<<<< HEAD
+=======
+    
+        <!-- login verification -->
+    <script type="module">
+        import { BASE_URL } from '../config/main.js';
+        
+      (async function() {
+      const token = sessionStorage.getItem('farehunt_token');
+      if (!token) {
+          window.location.href = "../login/index.html";
+          return;
+      }
+
+      try {
+          const response = await fetch(`${BASE_URL}/auth/verify-token`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+          }
+          });
+          const data = await response.json();
+          if (!response.ok || !data.valid) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login/index.html";
+          }
+          // else: token is valid, continue loading the page
+      } catch (err) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login/index.html";
+      }
+      })();
+    </script>
+
+
+
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
     <div class="container">
         <div class="banner">
             <div class="header">
@@ -457,7 +495,14 @@
         </div>
     </div>
 
+<<<<<<< HEAD
     <script>
+=======
+    <script type="module">
+        import { BASE_URL } from '../config/main.js';
+
+        const API_BASE_URL = `${BASE_URL}/api/rapido`;
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
         let pickupCoords, dropCoords;
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -474,7 +519,11 @@
                 calculateDistanceAndFetchEstimates();
             } else {
                 alert('Location data not found. Please select locations from the main page.');
+<<<<<<< HEAD
                 window.location.href = '../mainPage/hello.html';
+=======
+                window.location.href = '../mainPage';
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             }
         });
 
@@ -501,6 +550,7 @@
             return R * c;
         }
 
+<<<<<<< HEAD
         function bookRide() {
             const selectedOption = document.querySelector('.ride-option.selected');
             if (!selectedOption) {
@@ -522,12 +572,119 @@
         // Add click handlers for ride options
         document.querySelectorAll('.ride-option').forEach(option => {
             option.addEventListener('click', function() {
+=======
+        // function bookRide() {
+        //     const selectedOption = document.querySelector('.ride-option.selected');
+        //     if (!selectedOption) {
+        //         alert('Please select a ride option first');
+        //         return;
+        //     }
+
+        //     const vehicleType = selectedOption.id.split('-')[0];
+        //     const price = selectedOption.querySelector('.fare-estimate').textContent;
+
+        //     // Store booking details
+        //     sessionStorage.setItem('selectedVehicle', vehicleType);
+        //     sessionStorage.setItem('ridePrice', price);
+
+        //     // Redirect to booking confirmation
+        //     window.location.href = 'booking-confirmation.html';
+        // }
+
+        
+
+
+
+
+        function bookRide(vehicleType) {
+            const pickup = sessionStorage.getItem('pickupLocation');
+            const drop = sessionStorage.getItem('dropLocation');
+            const pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
+            const dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
+
+            const validTypes = ['bike', 'auto','mini'];
+            if (!validTypes.includes(vehicleType)) {
+                alert('Invalid vehicle type selected');
+                return;
+            }
+
+            const token = sessionStorage.getItem('farehunt_token');
+            if (!token) {
+                // Token is missing, redirect to login
+                window.location.href = "../login/index.html";
+                return;
+            }
+
+            fetch(`${API_BASE_URL}/book`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({
+                    vehicleType: vehicleType,
+                    pickup_location: `${pickupCoords.lat},${pickupCoords.lng}`,
+                    drop_location: `${dropCoords.lat},${dropCoords.lng}`
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        // Token invalid or expired, redirect to login
+                        sessionStorage.removeItem('farehunt_token');
+                        window.location.href = "../login/index.html";
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'confirmed') {
+                    // Save booking details
+                    sessionStorage.setItem('bookingId', data.booking_id);
+                    sessionStorage.setItem('serviceBookingId', data.rapido_booking_id || '');
+                    sessionStorage.setItem('bookingPrice', data.price);
+                    sessionStorage.setItem('bookingVehicleType', vehicleType);
+                    sessionStorage.setItem('bookingPickup', pickup);
+                    sessionStorage.setItem('bookingDrop', drop);
+
+                    // Redirect
+                    window.location.href = data.redirect_url || '../booking/confirmation.html';
+                } else {
+                    alert(data.message || 'Failed to create booking. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating booking:', error);
+                alert('Booking request failed. Please try again.');
+            });
+        }
+
+
+
+
+
+
+
+        // Add click handlers for ride options
+        document.querySelectorAll('.ride-option').forEach(option => {
+            option.addEventListener('click', function() {
+                
+
+
+
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                 // Remove selected class from all options
                 document.querySelectorAll('.ride-option').forEach(opt => {
                     opt.classList.remove('selected');
                 });
                 // Add selected class to clicked option
                 this.classList.add('selected');
+<<<<<<< HEAD
+=======
+                bookRide(this.id.split('-')[0]);
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             });
         });
 
@@ -541,10 +698,24 @@
                     end_longitude: dropCoords.lng
                 });
 
+<<<<<<< HEAD
                 const response = await fetch('http://localhost:3001/api/rapido/estimate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
+=======
+                const token = sessionStorage.getItem('farehunt_token');
+                if (!token) {
+                    window.location.href = "../login/index.html";
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/estimate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
