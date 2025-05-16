@@ -314,20 +314,14 @@
                 grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
                 gap: 15px;
                 padding: 15px;
-<<<<<<< HEAD
-=======
                 cursor: pointer;
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             }
 
             .fare-card {
                 width: 160px;
                 height: 200px;
                 padding: 15px;
-<<<<<<< HEAD
-=======
                 cursor: pointer;
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             }
 
             .vehicle-image {
@@ -434,8 +428,6 @@
     </style>
 </head>
 <body>
-<<<<<<< HEAD
-=======
 
 
      <!-- login verification -->
@@ -475,7 +467,6 @@
 
 
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
     <div class="loading-overlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Updating view...</div>
@@ -504,16 +495,12 @@
     <div id="error" class="error" style="display: none;"></div>
     <div class="fare-cards" id="fare-cards"></div>
 
-<<<<<<< HEAD
-    <script>
-=======
     <script type="module">
         import { BASE_URL } from '../config/main.js';
 
        
 
         const API_BASE_URL = `${BASE_URL}/api/farehunt`;
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
         // Get location from sessionStorage
         const pickupLocation = sessionStorage.getItem('pickupLocation');
         const dropLocation = sessionStorage.getItem('dropLocation');
@@ -531,14 +518,11 @@
             document.getElementById('loading').style.display = 'none';
         }
 
-<<<<<<< HEAD
-=======
         const token = sessionStorage.getItem('farehunt_token');
         if (!token) {
             window.location.href = "../login/index.html";
         }
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
         // Function to fetch fare data from all services
         async function fetchFareData() {
             if (!pickupCoords || !dropCoords) {
@@ -569,19 +553,12 @@
         // Function to fetch Ola fare estimates
         async function fetchOlaFares() {
             try {
-<<<<<<< HEAD
-                const response = await fetch('http://localhost:3001/api/ola/estimate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-=======
                 const response = await fetch(`${BASE_URL}/api/ola/estimate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
@@ -604,15 +581,6 @@
             }
         }
 
-<<<<<<< HEAD
-        // Function to fetch Uber fare estimates
-        async function fetchUberFares() {
-            try {
-                const response = await fetch('http://localhost:3001/api/uber/estimate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-=======
 
 
 
@@ -625,7 +593,6 @@
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
@@ -651,18 +618,11 @@
         // Function to fetch Rapido fare estimates
         async function fetchRapidoFares() {
             try {
-<<<<<<< HEAD
-                const response = await fetch('http://localhost:3001/api/rapido/estimate', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-=======
                 const response = await fetch(`${BASE_URL}/api/rapido/estimate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': 'Bearer ' + token
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
@@ -764,16 +724,12 @@
             'SUV': {
                 image: '../assets/suv_icon_2.png',
                 displayName: 'SUV',
-<<<<<<< HEAD
-                aliases: ['suv', 'xl', 'prime suv']
-=======
                 aliases: ['suv', 'prime suv','primesuv']
             },
             'XL': {
                 image: '../assets/xl.png',
                 displayName: 'SUV',
                 aliases: ['xl']
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             }
         };
 
@@ -829,8 +785,6 @@
             return type;
         }
 
-<<<<<<< HEAD
-=======
 
         function bookRide(vehicleType, service) {
             const pickup = sessionStorage.getItem('pickupLocation');
@@ -960,7 +914,6 @@
 
 
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
         function displayVehicleBasedFares(fareData) {
             const cardsContainer = document.getElementById('fare-cards');
             cardsContainer.innerHTML = '';
@@ -997,11 +950,8 @@
 
                 console.log(`Lowest fare for ${vehicleType}:`, lowestFare); // Debug log
 
-<<<<<<< HEAD
-=======
 
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                 const card = document.createElement('div');
                 card.className = 'fare-card';
                 card.innerHTML = `
@@ -1017,15 +967,12 @@
                         </div>
                     </div>
                 `;
-<<<<<<< HEAD
-=======
                 card.addEventListener('click', () => {
                     // Handle card click event (e.g., redirect to booking page)
                     console.log(`Clicked on ${lowestFare.service} - ${vehicleType}`);
                     bookRide(vehicleType, lowestFare.service);
 
                 });
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                 cardsContainer.appendChild(card);
             });
         }
@@ -1066,8 +1013,6 @@
                         </div>
                     </div>
                 `;
-<<<<<<< HEAD
-=======
                 card.addEventListener('click', () => {
                     // Handle card click event (e.g., redirect to booking page)
                     console.log(`Clicked on ${lowestFare.service} - ${lowestFare.vehicleType}`);
@@ -1075,7 +1020,6 @@
 
                     bookRide(lowestFare.vehicleType, lowestFare.service);
                 });
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                 cardsContainer.appendChild(card);
             });
         }

@@ -47,14 +47,9 @@ const estimatePrice = (req, res) => {
 };
 
 const createBooking = async (req, res) => {
-<<<<<<< HEAD
-    const { user_id, vehicleType, pickup_location, drop_location } = req.body;
-    
-=======
     const { vehicleType, pickup_location, drop_location } = req.body;
     const user_id = req.user.user_id;
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
     try {
         // Validate vehicle type
         const rapidoVehicleTypes = require('../config/services').rapido.vehicleTypes;
@@ -99,11 +94,7 @@ const createBooking = async (req, res) => {
             duration: duration.toFixed(2),
             pickup_location,
             drop_location,
-<<<<<<< HEAD
-            redirect_url: `https://www.rapido.bike/booking-confirmed?vehicle=${vehicleType}&bookingId=${rapidoBookingId}`,
-=======
             redirect_url: `https://www.rapido.bike?vehicle=${vehicleType}&bookingId=${rapidoBookingId}`,
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             safety_measures: [
                 "Helmet provided for bike rides",
                 "Sanitized vehicles",

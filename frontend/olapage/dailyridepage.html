@@ -386,8 +386,6 @@
     </style>
 </head>
 <body>
-<<<<<<< HEAD
-=======
 
 
 
@@ -439,7 +437,6 @@
 
 
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
     <div class="container">
         <div class="banner">
             <img src="ola.png" alt="Ola Logo" class="make-circle">
@@ -517,17 +514,11 @@
         </ul>
     </div>
 
-<<<<<<< HEAD
-    <script>
-        // Add API base URL configuration
-        const API_BASE_URL = 'http://localhost:3001/api/ola';
-=======
     <script type="module">
         import { BASE_URL } from '../config/main.js';
         // Add API base URL configuration
 
         const API_BASE_URL = `${BASE_URL}/api/ola`;
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
         
         document.addEventListener('DOMContentLoaded', function() {
             const pickup = sessionStorage.getItem('pickupLocation');
@@ -542,8 +533,6 @@
                 document.getElementById('pickupLocation').textContent = 'Pickup: ' + pickup;
                 document.getElementById('dropLocation').textContent = 'Drop: ' + drop;
                 
-<<<<<<< HEAD
-=======
 
                 const token = sessionStorage.getItem('farehunt_token');
                 if (!token) {
@@ -552,21 +541,14 @@
                     return;
                 }
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                 // Fetch fare estimates from backend using olaRoutes
                 fetch(`${API_BASE_URL}/estimate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-<<<<<<< HEAD
-                        'Accept': 'application/json'
-                    },
-                    credentials: 'include',
-=======
                         'Accept': 'application/json',
                         'Authorization': 'Bearer ' + token
                     },
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
                         start_longitude: pickupCoords.lng,
@@ -640,11 +622,7 @@
                 });
             } else {
                 alert('Location data not found. Please select locations from the main page.');
-<<<<<<< HEAD
-                window.location.href = '../mainPage/hello.html';
-=======
                 window.location.href = '../mainPage';
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             }
         });
 
@@ -654,18 +632,12 @@
             const pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
             const dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
 
-<<<<<<< HEAD
-            // Validate vehicle type
-=======
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             const validTypes = ['auto', 'mini', 'bike', 'primesedan', 'primesuv'];
             if (!validTypes.includes(vehicleType)) {
                 alert('Invalid vehicle type selected');
                 return;
             }
 
-<<<<<<< HEAD
-=======
             const token = sessionStorage.getItem('farehunt_token');
             if (!token) {
                 // Token is missing, redirect to login
@@ -673,23 +645,14 @@
                 return;
             }
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
             fetch(`${API_BASE_URL}/book`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-<<<<<<< HEAD
-                    'Accept': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    user_id: sessionStorage.getItem('userId') || 'guest',
-=======
                     'Accept': 'application/json',
                     'Authorization': 'Bearer ' + token
                 },
                 body: JSON.stringify({
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     vehicleType: vehicleType,
                     pickup_location: `${pickupCoords.lat},${pickupCoords.lng}`,
                     drop_location: `${dropCoords.lat},${dropCoords.lng}`
@@ -697,60 +660,37 @@
             })
             .then(response => {
                 if (!response.ok) {
-<<<<<<< HEAD
-=======
                     if (response.status === 401 || response.status === 403) {
                         // Token invalid or expired, redirect to login
                         sessionStorage.removeItem('farehunt_token');
                         window.location.href = "../login/index.html";
                     }
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 return response.json();
             })
             .then(data => {
                 if (data.status === 'confirmed') {
-<<<<<<< HEAD
-                    // Store booking details in session storage
-                    sessionStorage.setItem('bookingId', data.booking_id);
-                    sessionStorage.setItem('olaBookingId', data.ola_booking_id);
-=======
                     // Save booking details
                     sessionStorage.setItem('bookingId', data.booking_id);
                     sessionStorage.setItem('serviceBookingId', data.ola_booking_id || '');
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                     sessionStorage.setItem('bookingPrice', data.price);
                     sessionStorage.setItem('bookingVehicleType', vehicleType);
                     sessionStorage.setItem('bookingPickup', pickup);
                     sessionStorage.setItem('bookingDrop', drop);
-<<<<<<< HEAD
-                    
-                    // Redirect to booking confirmation page
-                    window.location.href = data.redirect_url;
-                } else {
-                    alert('Failed to create booking. Please try again.');
-=======
 
                     // Redirect
                     window.location.href = data.redirect_url || '../booking/confirmation.html';
                 } else {
                     alert(data.message || 'Failed to create booking. Please try again.');
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
                 }
             })
             .catch(error => {
                 console.error('Error creating booking:', error);
-<<<<<<< HEAD
-                alert('Failed to create booking. Please try again.');
-            });
-        }
-=======
                 alert('Booking request failed. Please try again.');
             });
         }
 
->>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
     </script>
 </body>
 </html>
