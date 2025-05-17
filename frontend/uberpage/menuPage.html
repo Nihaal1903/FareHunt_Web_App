@@ -228,7 +228,7 @@
 
         const token = sessionStorage.getItem('farehunt_token');
         if (!token) {
-            window.location.href = "../login/index.html";
+            window.location.href = "../login";
             return;
         }
 
@@ -243,12 +243,12 @@
             const data = await response.json();
             if (!response.ok || !data.valid) {
             sessionStorage.removeItem('farehunt_token');
-            window.location.href = "../login/index.html";
+            window.location.href = "../login";
             }
             // else: token is valid, continue loading the page
         } catch (err) {
             sessionStorage.removeItem('farehunt_token');
-            window.location.href = "../login/index.html";
+            window.location.href = "../login";
         }
         })();
 
@@ -343,7 +343,7 @@
         const logoutButton = document.getElementById('logout');
         logoutButton.addEventListener('click', () => {
             sessionStorage.removeItem('farehunt_token');
-            window.location.href = "../login/index.html";
+            window.location.href = "../login";
         });
 
 

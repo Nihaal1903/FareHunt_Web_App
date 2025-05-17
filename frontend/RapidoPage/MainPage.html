@@ -413,7 +413,7 @@
       (async function() {
       const token = sessionStorage.getItem('farehunt_token');
       if (!token) {
-          window.location.href = "../login/index.html";
+          window.location.href = "../login";
           return;
       }
 
@@ -428,12 +428,12 @@
           const data = await response.json();
           if (!response.ok || !data.valid) {
           sessionStorage.removeItem('farehunt_token');
-          window.location.href = "../login/index.html";
+          window.location.href = "../login";
           }
           // else: token is valid, continue loading the page
       } catch (err) {
           sessionStorage.removeItem('farehunt_token');
-          window.location.href = "../login/index.html";
+          window.location.href = "../login";
       }
       })();
     </script>
@@ -577,7 +577,7 @@
             const token = sessionStorage.getItem('farehunt_token');
             if (!token) {
                 // Token is missing, redirect to login
-                window.location.href = "../login/index.html";
+                window.location.href = "../login";
                 return;
             }
 
@@ -599,7 +599,7 @@
                     if (response.status === 401 || response.status === 403) {
                         // Token invalid or expired, redirect to login
                         sessionStorage.removeItem('farehunt_token');
-                        window.location.href = "../login/index.html";
+                        window.location.href = "../login";
                     }
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -662,7 +662,7 @@
 
                 const token = sessionStorage.getItem('farehunt_token');
                 if (!token) {
-                    window.location.href = "../login/index.html";
+                    window.location.href = "../login";
                     return;
                 }
 

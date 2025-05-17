@@ -7,7 +7,7 @@ const app = express();
 
 // CORS configuration
 const corsOptions = {
-    origin: ['http://127.0.0.1:5501', 'http://localhost:5501'],
+    origin: ['http://127.0.0.1:5501', 'http://localhost:5501', 'https://fairhunt.najrudin.com.np', 'http://fairhunt.najrudin.com.np' ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
     credentials: true
