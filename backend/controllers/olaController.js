@@ -52,7 +52,10 @@ const estimatePrice = (req, res) => {
 };
 
 const createBooking = async (req, res) => {
-    const { user_id, vehicleType, pickup_location, drop_location } = req.body;
+    
+
+    const { vehicleType, pickup_location, drop_location } = req.body;
+    const user_id = req.user.user_id;
     
     try {
         // Validate vehicle type
@@ -85,6 +88,10 @@ const createBooking = async (req, res) => {
             price
         });
         
+        let pickup_lat = pickupCoords[0];
+        let pickup_lng = pickupCoords[1];
+        let drop_lat = dropCoords[0];
+        let drop_lng = dropCoords[1];
         // Generate Ola-specific booking ID format
         const olaBookingId = `OLA${vehicleType.toUpperCase().slice(0,3)}${Date.now().toString().slice(-6)}`;
         
@@ -98,7 +105,8 @@ const createBooking = async (req, res) => {
             duration: duration.toFixed(2),
             pickup_location,
             drop_location,
-            redirect_url: `https://book.olacabs.com/?vehicle=${vehicleType}&booking_id=${olaBookingId}`,
+            // redirect_url: `https://book.olacabs.com/?vehicle=${vehicleType}&booking_id=${olaBookingId}`,
+            redirect_url: `https://book.olacabs.com/?pickup_lat=${pickup_lat}&pickup_lng=${pickup_lng}&drop_lat=${drop_lat}&drop_lng=${drop_lng}&category=${vehicleType}`,
             cancellation_policy: "Free cancellation within 2 minutes of booking"
         });
     } catch (error) {

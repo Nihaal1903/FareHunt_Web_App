@@ -106,6 +106,50 @@
     </style>
 </head>
 <body>
+<<<<<<< HEAD
+=======
+
+
+        <!-- login verification -->
+    <script>
+
+        const BASE_URL = 'http://localhost:3001';
+
+      (async function() {
+      const token = sessionStorage.getItem('farehunt_token');
+      if (!token) {
+          window.location.href = "../login";
+          return;
+      }
+
+      try {
+          const response = await fetch(`${BASE_URL}/auth/verify-token`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+          }
+          });
+          const data = await response.json();
+          if (!response.ok || !data.valid) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login";
+          }
+          // else: token is valid, continue loading the page
+      } catch (err) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login";
+      }
+      })();
+    </script>
+
+
+
+
+
+
+
+>>>>>>> f6b06ff (NajrudinAn modification and solve someProblems)
     <div class="container">
         <div class="header">
             <div class="menu-icon">&#9776;</div>

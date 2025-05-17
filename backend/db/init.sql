@@ -20,6 +20,14 @@ CREATE TABLE bookings (
     external_booking_id VARCHAR(100)
 );
 
+CREATE TABLE logins (
+    login_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    last_login TIMESTAMP
+);
+
 -- Create indexes
 CREATE INDEX idx_bookings_user ON bookings(user_id);
 CREATE INDEX idx_bookings_service ON bookings(service_provider);
@@ -32,6 +40,9 @@ INSERT INTO bookings (user_id, service_provider, pickup_location, drop_location,
 (1, 'uber', 'Central Park', 'Times Square', 5.2, 450.00, 'UBER-SIM-12345'),
 (1, 'ola', 'Empire State', 'Brooklyn Bridge', 8.7, 620.00, 'OLA-SIM-67890'),
 (1, 'rapido', 'Statue of Liberty', 'Wall Street', 3.5, 280.00, 'RAPIDO-SIM-54321');
+
+INSERT INTO logins (user_id, email, password_hash) VALUES
+(1, 'test@example.com', 'sample_hashed_password');
 
 ALTER TABLE bookings ADD COLUMN vehicle_type VARCHAR(20);
 

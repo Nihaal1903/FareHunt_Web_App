@@ -50,6 +50,11 @@ const getPriceEstimates = async (req, res) => {
     }
 };
 
+
+
+
+
+
 const createBooking = async (req, res) => {
     const { user_id, service, vehicleType, pickup_location, drop_location } = req.body;
     
@@ -88,20 +93,34 @@ const createBooking = async (req, res) => {
         
         const booking = await Booking.create(bookingData);
         
+
+        let pickup_lat = pickupCoords[0];
+        let pickup_lng = pickupCoords[1];
+        let drop_lat = dropCoords[0];
+        let drop_lng = dropCoords[1];
+ 
+
+
         // Generate redirect URL
         let redirectUrl;
         switch(service) {
             case 'uber':
-                redirectUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&vehicle=${vehicleType}&booking_id=${booking.booking_id}`;
+                // redirectUrl = `https://m.uber.com/ul/?action=setPickup&pickup=my_location&vehicle=${vehicleType}&booking_id=${booking.booking_id}`;
+                 redirectUrl = `https://m.uber.com/ul/?pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&drop[latitude]=${drop_lat}&drop[longitude]=${drop_lng}&product_id=${vehicleType}`;
                 break;
             case 'ola':
-                redirectUrl = `https://book.olacabs.com/?vehicle=${vehicleType}&booking_id=${booking.booking_id}`;
+                // redirectUrl = `https://book.olacabs.com/?vehicle=${vehicleType}&booking_id=${booking.booking_id}`;
+                redirectUrl = `https://book.olacabs.com/?pickup_lat=${pickup_lat}&pickup_lng=${pickup_lng}&drop_lat=${drop_lat}&drop_lng=${drop_lng}&category=${vehicleType}`;
                 break;
             case 'rapido':
-                redirectUrl = `https://www.rapido.bike/booking-confirmed?vehicle=${vehicleType}&bookingId=${booking.booking_id}`;
+                redirectUrl = `https://app.rapido.bike/?pickup_lat=${pickup_lat}&pickup_lng=${pickup_lng}&drop_lat=${drop_lat}&drop_lng=${drop_lng}`;
+
+                // redirectUrl = `https://www.rapido.bike/booking-confirmed?vehicle=${vehicleType}&bookingId=${booking.booking_id}`;
+               
                 break;
         }
         
+
         res.json({
             success: true,
             booking_id: booking.booking_id,
@@ -119,5 +138,37 @@ const createBooking = async (req, res) => {
         });
     }
 };
+const getBookingDetails = async (req, res) => {
 
-module.exports = { getPriceEstimates, createBooking };
+    const user_id = req.user.user_id;
+
+    try {
+        // Check if booking exists
+        const booking = await Booking.findByUser(user_id);
+        if (!booking) {
+            return res.status(404).json({ 
+                success: false, 
+                error: 'Booking not found' 
+            });
+        }
+
+        // // Check if the booking belongs to the user
+        // if (booking.user_id !== user_id) {
+        //     return res.status(403).json({ 
+        //         success: false, 
+        //         error: 'Unauthorized access' 
+        //     });
+        // }
+
+        res.json({
+            success: true,
+            booking
+        });
+    } catch (error) {
+        res.status(500).json({ 
+            success: false, 
+            error: error.message 
+        });
+    }
+};
+module.exports = { getPriceEstimates, createBooking, getBookingDetails };

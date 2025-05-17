@@ -39,6 +39,27 @@
     header .close-btn:hover {
       transform: rotate(90deg);
     }
+
+    .back-btn {
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      text-decoration: none;
+      position:absolute;
+      top: 20px;
+      left: 30px;
+      background-color: #4facfe;
+      padding: 10px 15px;
+      border-radius: 20px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .back-btn:hover {
+      text-decoration: underline;
+    }
+
+
+
     .profile-section {
       text-align: center;
       padding: 20px;
@@ -89,6 +110,7 @@
       flex-direction: column;
       align-items: center;
       transition: transform 0.3s, background 0.3s;
+      cursor: pointer;
     }
     .actions div:hover {
       background: linear-gradient(to top, #f3f4f6, #e0e0e0);
@@ -117,6 +139,7 @@
       background: #f8f9fa;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       transition: background 0.3s;
+      cursor: pointer;
     }
     .menu div:hover {
       background: #e0e7ff;
@@ -149,6 +172,7 @@
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
     }
     .suggestions .option:hover {
       transform: translateY(-5px);
@@ -192,15 +216,55 @@
   </style>
 </head>
 <body>
+
+
+
+      <!-- login verification -->
+    <script type="module">
+      import { BASE_URL } from '../config/main.js';
+
+    
+        (async function() {
+
+        const token = sessionStorage.getItem('farehunt_token');
+        if (!token) {
+            window.location.href = "../login";
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/auth/verify-token`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+            });
+            const data = await response.json();
+            if (!response.ok || !data.valid) {
+            sessionStorage.removeItem('farehunt_token');
+            window.location.href = "../login";
+            }
+            // else: token is valid, continue loading the page
+        } catch (err) {
+            sessionStorage.removeItem('farehunt_token');
+            window.location.href = "../login";
+        }
+        })();
+
+
+
+    </script>
   
+  <a class="back-btn" href="../mainPage"><i class="fas fa-arrow-left"></i> Back</a>
   
   <div class="profile-section">
     <img src="../assets/Farehunt logo.png" alt="Profile Picture">
-    <h2>Sample_User</h2>
+    <h2 id="userName">Sample_User</h2>
   </div>
 
   <div class="actions">
-    <div>
+    <div id="allBookings">
       <i class="fas fa-history"></i>
       <p>Activity</p>
     </div>
@@ -218,6 +282,7 @@
     <div><i class="fas fa-headset"></i> Support</div>
     <div><i class="fas fa-user-cog"></i> Manage account</div>
     <div><i class="fas fa-cog"></i> Settings</div>
+    <div id="logout"><i class="fas fa-sign-out-alt"></i> Log Out</div>
   </div>
 
   <div class="suggestions">
@@ -249,5 +314,44 @@
   <div class="footer">
     <img src="./Uber_logo.png" alt="Uber Logo">
   </div>
+
+  <script type="module">
+    import { BASE_URL } from '../config/main.js';
+    // JavaScript to handle tab switching
+        const API_BASE_URL = `${BASE_URL}/api/user`;
+        const token = sessionStorage.getItem('farehunt_token');
+        fetch(`${API_BASE_URL}/profile`, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log('User data:', data);
+            document.getElementById('userName').textContent = data.name || 'Sample_User';
+        })
+        .catch(err => console.error('Error:', err));
+
+
+        const allBookingsButton = document.getElementById('allBookings');
+        allBookingsButton.addEventListener('click', () => {
+            window.location.href = "../allBooking";
+        });
+
+        const logoutButton = document.getElementById('logout');
+        logoutButton.addEventListener('click', () => {
+            sessionStorage.removeItem('farehunt_token');
+            window.location.href = "../login";
+        });
+
+
+  </script>
+
+
+
+
+
 </body>
 </html>

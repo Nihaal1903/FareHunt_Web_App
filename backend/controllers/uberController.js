@@ -1,5 +1,6 @@
 const PriceService = require('../services/priceService');
 const Booking = require('../models/booking');
+const { uber } = require('../config/services');
 
 const estimatePrice = (req, res) => {
     const { start_latitude, start_longitude, end_latitude, end_longitude } = req.body;
@@ -39,7 +40,9 @@ const estimatePrice = (req, res) => {
 };
 
 const createBooking = async (req, res) => {
-    const { user_id, vehicleType, pickup_location, drop_location } = req.body;
+    console.log(req.body);
+    const { vehicleType, pickup_location, drop_location } = req.body;
+    const user_id = req.user.user_id;
     
     try {
         const pickupCoords = pickup_location.split(',').map(Number);
@@ -62,17 +65,26 @@ const createBooking = async (req, res) => {
             distance,
             price
         });
+
+        let pickup_lat = pickupCoords[0];
+        let pickup_lng = pickupCoords[1];
+        let drop_lat = dropCoords[0];
+        let drop_lng = dropCoords[1];
+
+         const uberBookingId = `UBR${vehicleType.toUpperCase().slice(0,3)}${Date.now().toString().slice(-6)}`;
         
         res.json({
             status: 'confirmed',
             booking_id: booking.booking_id,
             vehicle_type: vehicleType,
+            uber_booking_id: uberBookingId,
             price,
             distance: distance.toFixed(2),
             duration: duration.toFixed(2),
             pickup_location,
             drop_location,
-            redirect_url: `https://m.uber.com/ul/?action=setPickup&pickup=my_location&vehicle=${vehicleType}&booking_id=${booking.booking_id}`
+            // redirect_url: `https://m.uber.com/ul/?action=setPickup&pickup=my_location&vehicle=${vehicleType}&booking_id=${booking.booking_id}`
+            redirect_url: `https://m.uber.com/ul/?pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&drop[latitude]=${drop_lat}&drop[longitude]=${drop_lng}&product_id=${vehicleType}`
         });
     } catch (error) {
         res.status(500).json({ 

@@ -515,6 +515,47 @@
     </style>
 </head>
 <body>
+
+    <!-- login verification -->
+    <script type="module">
+
+
+        import { BASE_URL } from '../config/main.js';
+
+        (async function() {
+        const token = sessionStorage.getItem('farehunt_token');
+        if (!token) {
+            window.location.href = "../login";
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}/auth/verify-token`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token
+            }
+            });
+            const data = await response.json();
+            if (!response.ok || !data.valid) {
+            sessionStorage.removeItem('farehunt_token');
+            window.location.href = "../login";
+            }
+            // else: token is valid, continue loading the page
+        } catch (err) {
+            sessionStorage.removeItem('farehunt_token');
+            window.location.href = "../login";
+        }
+        })();
+    </script>
+
+
+
+
+
+
+
     <div class="container">
         <div class="banner">
             <div class="header">
@@ -594,9 +635,10 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { BASE_URL } from '../config/main.js';
         // Add API base URL configuration
-        const API_BASE_URL = 'http://localhost:3001/api/uber';
+        const API_BASE_URL = `${BASE_URL}/api/uber`;
         
         document.addEventListener('DOMContentLoaded', function() {
             const pickup = sessionStorage.getItem('pickupLocation');
@@ -611,14 +653,22 @@
                 document.getElementById('pickupLocation').textContent = 'Pickup: ' + pickup;
                 document.getElementById('dropLocation').textContent = 'Drop: ' + drop;
                 
+
+                const token = sessionStorage.getItem('farehunt_token');
+                if (!token) {
+                    // Token is missing, redirect to login
+                    window.location.href = "../login";
+                    return;
+                }
+
                 // Fetch fare estimates from backend using uberRoutes
                 fetch(`${API_BASE_URL}/estimate`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json',
+                        'Authorization': 'Bearer ' + token
                     },
-                    credentials: 'include',
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
                         start_longitude: pickupCoords.lng,
@@ -692,7 +742,7 @@
                 });
             } else {
                 alert('Location data not found. Please select locations from the main page.');
-                window.location.href = '../mainPage/hello.html';
+                window.location.href = '../mainPage';
             }
         });
 
@@ -709,15 +759,22 @@
                 return;
             }
 
+            const token = sessionStorage.getItem('farehunt_token');
+            if (!token) {
+                // Token is missing, redirect to login
+                window.location.href = "../login";
+                return;
+            }
+
+
             fetch(`${API_BASE_URL}/book`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
                 },
-                credentials: 'include',
                 body: JSON.stringify({
-                    user_id: sessionStorage.getItem('userId') || 'guest',
                     vehicleType: vehicleType,
                     pickup_location: `${pickupCoords.lat},${pickupCoords.lng}`,
                     drop_location: `${dropCoords.lat},${dropCoords.lng}`
@@ -733,7 +790,7 @@
                 if (data.status === 'confirmed') {
                     // Store booking details in session storage
                     sessionStorage.setItem('bookingId', data.booking_id);
-                    sessionStorage.setItem('uberBookingId', data.uber_booking_id);
+                    sessionStorage.setItem('serviceBookingId', data.uber_booking_id);
                     sessionStorage.setItem('bookingPrice', data.price);
                     sessionStorage.setItem('bookingVehicleType', vehicleType);
                     sessionStorage.setItem('bookingPickup', pickup);
@@ -795,10 +852,18 @@
         // Function to fetch fare estimates
         async function fetchFareEstimates() {
             try {
-                const response = await fetch('http://localhost:3001/api/uber/estimate', {
+                const token = sessionStorage.getItem('farehunt_token');
+                if (!token) {
+                    // Token is missing, redirect to login
+                    window.location.href = "../login";
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/estimate`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,

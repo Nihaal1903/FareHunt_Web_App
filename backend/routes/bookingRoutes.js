@@ -1,8 +1,12 @@
 const express = require('express');
 const router = express.Router();  // Add this line to create a router instance
 const PriceService = require('../services/priceService');
+const { getBookingDetails } = require('../controllers/bookingController');
+const authenticateToken = require('../middlewares/auth');
 
-router.post('/api/estimate', async (req, res) => {
+router.get('/allBooking',authenticateToken, getBookingDetails);
+
+router.post('/estimate',authenticateToken, async (req, res) => {
     const { service, pickup_lng, pickup_lat, drop_lng, drop_lat } = req.body;
     
     try {

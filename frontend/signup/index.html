@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FareHunt Signup</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to bottom, #e3f2fd, #bbdefb);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      background: linear-gradient(to bottom, #ffffff, #f5f5f5);
+      padding: 32px 28px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.15);
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+    }
+    .login-container h2 {
+      color: #1976d2;
+      margin-bottom: 18px;
+      font-family: 'Montserrat', sans-serif;
+    }
+    .input-group {
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.07);
+      padding: 8px 12px;
+    }
+    .input-group i {
+      color: #1976d2;
+      margin-right: 8px;
+    }
+    .input-group input {
+      border: none;
+      outline: none;
+      font-size: 15px;
+      width: 100%;
+      background: transparent;
+      padding: 8px 0;
+    }
+    .login-btn, .switch-btn {
+      width: 100%;
+      padding: 10px 0;
+      background: linear-gradient(to right, #42a5f5, #1e88e5);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-family: 'Montserrat', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(33, 150, 243, 0.18);
+      transition: background 0.3s;
+      margin-bottom: 10px;
+    }
+    .login-btn:hover, .switch-btn:hover {
+      background: linear-gradient(to right, #1e88e5, #0d47a1);
+    }
+    .error-msg {
+      color: #e53935;
+      margin-bottom: 10px;
+      font-size: 14px;
+      min-height: 18px;
+    }
+    .switch-link {
+      color: #1976d2;
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+      font-size: 15px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+
+
+    
+<script type="module">
+   import { BASE_URL } from '../config/main.js';
+
+    // Check if token is present in session storage
+  (async function () {
+    const token = sessionStorage.getItem('farehunt_token');
+    if (!token) return; 
+
+    try {
+      const response = await fetch( `${BASE_URL}/auth/verify-token`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        }
+      });
+
+      const data = await response.json();
+      if (data.valid) {
+        // If token is valid, redirect to mail page
+        window.location.href = "../mainPage";
+      }
+    } catch (err) {
+      // Ignore error and stay on page
+      console.error('Token verification error:', err);
+    }
+  })();
+</script>
+
+
+
+
+
+  <div class="login-container">
+    <h2><i class="fa-solid fa-user-plus"></i> FareHunt Signup</h2>
+    <div class="error-msg" id="errorMsg"></div>
+    <form id="signupForm" autocomplete="off">
+      <div class="input-group">
+        <i class="fa-solid fa-user"></i>
+        <input type="text" id="name" placeholder="Name" required>
+      </div>
+      <div class="input-group">
+        <i class="fa-solid fa-envelope"></i>
+        <input type="email" id="email" placeholder="Email" required>
+      </div>
+      <div class="input-group">
+        <i class="fa-solid fa-phone"></i>
+        <input type="text" id="phone" placeholder="Phone" required>
+      </div>
+      <div class="input-group">
+        <i class="fa-solid fa-lock"></i>
+        <input type="password" id="password" placeholder="Password" required>
+      </div>
+      <button type="submit" class="login-btn">Sign Up</button>
+    </form>
+    <button class="switch-link" onclick="window.location.href='../login'">Already have an account? Login</button>
+  </div>
+  <script type="module">
+    import { BASE_URL } from '../config/main.js';
+
+    document.getElementById('signupForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorMsg = document.getElementById('errorMsg');
+
+      try {
+        const response = await fetch(`${BASE_URL}/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, phone, password })
+        });
+        const data = await response.json();
+
+        if (response.ok) {
+          alert("Signup successful! Please login.");
+          window.location.href = "../login";
+        } else {
+          errorMsg.textContent = data.message || "Signup failed.";
+        }
+      } catch (err) {
+        errorMsg.textContent = "Server error. Please try again.";
+      }
+    });
+  </script>
+</body>
+</html>

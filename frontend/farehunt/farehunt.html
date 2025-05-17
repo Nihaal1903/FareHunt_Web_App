@@ -38,6 +38,7 @@
             font-weight: 700;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
             letter-spacing: 1px;
+            cursor: pointer;
         }
 
         .view-toggle {
@@ -76,6 +77,11 @@
 
         .radio-group input[type="radio"]:checked + label {
             font-weight: 600;
+        }
+        .radio-group label {
+            font-size: 16px;
+            color: #fff;
+            cursor: pointer;
         }
 
         .location-display {
@@ -117,6 +123,7 @@
             margin: 0 auto;
             animation: fadeIn 0.5s ease-out;
             transition: opacity 0.3s ease;
+            cursor: pointer;
         }
 
         .fare-cards.loading {
@@ -314,12 +321,14 @@
                 grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
                 gap: 15px;
                 padding: 15px;
+                cursor: pointer;
             }
 
             .fare-card {
                 width: 160px;
                 height: 200px;
                 padding: 15px;
+                cursor: pointer;
             }
 
             .vehicle-image {
@@ -426,6 +435,45 @@
     </style>
 </head>
 <body>
+
+
+     <!-- login verification -->
+    <script type="module">
+    
+    import { BASE_URL } from '../config/main.js';
+      (async function() {
+      const token = sessionStorage.getItem('farehunt_token');
+      if (!token) {
+          window.location.href = "../login";
+          return;
+      }
+
+      try {
+          const response = await fetch(`${BASE_URL}/auth/verify-token`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+          }
+          });
+          const data = await response.json();
+          if (!response.ok || !data.valid) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login";
+          }
+          // else: token is valid, continue loading the page
+      } catch (err) {
+          sessionStorage.removeItem('farehunt_token');
+          window.location.href = "../login";
+      }
+      })();
+    </script>
+
+
+
+
+
+
     <div class="loading-overlay">
         <div class="loading-spinner"></div>
         <div class="loading-text">Updating view...</div>
@@ -454,7 +502,12 @@
     <div id="error" class="error" style="display: none;"></div>
     <div class="fare-cards" id="fare-cards"></div>
 
-    <script>
+    <script type="module">
+        import { BASE_URL } from '../config/main.js';
+
+       
+
+        const API_BASE_URL = `${BASE_URL}/api/farehunt`;
         // Get location from sessionStorage
         const pickupLocation = sessionStorage.getItem('pickupLocation');
         const dropLocation = sessionStorage.getItem('dropLocation');
@@ -470,6 +523,11 @@
             document.getElementById('error').style.display = 'block';
             document.getElementById('error').textContent = 'Please select both pickup and drop locations on the map first.';
             document.getElementById('loading').style.display = 'none';
+        }
+
+        const token = sessionStorage.getItem('farehunt_token');
+        if (!token) {
+            window.location.href = "../login";
         }
 
         // Function to fetch fare data from all services
@@ -502,10 +560,12 @@
         // Function to fetch Ola fare estimates
         async function fetchOlaFares() {
             try {
-                const response = await fetch('http://localhost:3001/api/ola/estimate', {
+                const response = await fetch(`${BASE_URL}/api/ola/estimate`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
@@ -528,13 +588,18 @@
             }
         }
 
+
+
+
+
         // Function to fetch Uber fare estimates
         async function fetchUberFares() {
             try {
-                const response = await fetch('http://localhost:3001/api/uber/estimate', {
+                const response = await fetch(`${BASE_URL}/api/uber/estimate`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
@@ -560,10 +625,11 @@
         // Function to fetch Rapido fare estimates
         async function fetchRapidoFares() {
             try {
-                const response = await fetch('http://localhost:3001/api/rapido/estimate', {
+                const response = await fetch(`${BASE_URL}/api/rapido/estimate`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
                     },
                     body: JSON.stringify({
                         start_latitude: pickupCoords.lat,
@@ -665,7 +731,12 @@
             'SUV': {
                 image: '../assets/suv_icon_2.png',
                 displayName: 'SUV',
-                aliases: ['suv', 'xl', 'prime suv']
+                aliases: ['suv', 'prime suv','primesuv']
+            },
+            'XL': {
+                image: '../assets/xl.png',
+                displayName: 'SUV',
+                aliases: ['xl']
             }
         };
 
@@ -721,6 +792,135 @@
             return type;
         }
 
+
+        function bookRide(vehicleType, service) {
+            const pickup = sessionStorage.getItem('pickupLocation');
+            const drop = sessionStorage.getItem('dropLocation');
+            const pickupCoords = JSON.parse(sessionStorage.getItem('pickupCoords'));
+            const dropCoords = JSON.parse(sessionStorage.getItem('dropCoords'));
+            console.log('non normalaize service:', service);
+            console.log('non normalaize vehicleType:', vehicleType);
+            service = service.toLowerCase();
+            vehicleType = vehicleType.toLowerCase();
+            console.log('normalaize service:', service);
+            console.log('normalaize vehicleType:', vehicleType);
+
+            if (!pickup || !drop || !pickupCoords || !dropCoords) {
+                alert('Please select both pickup and drop locations on the map first.');
+                return;
+            }
+            if (!vehicleType) {
+                alert('Please select a vehicle type first');
+                return;
+            }
+            if (!service) {
+                alert('Please select a service first');
+                return;
+            }
+
+            let validTypes = [];
+            if(service === 'ola') {
+                validTypes = ['auto', 'mini', 'bike', 'primesedan', 'primesuv'];
+            } else if (service === 'uber') {
+                validTypes = ['auto', 'ubergo', 'sedan', 'xl', 'bike'];
+            } else if (service === 'rapido') {
+                validTypes = ['bike', 'auto','mini'];
+            }
+            else {
+                alert('Invalid service selected');
+            }
+
+    
+            if (!validTypes.includes(vehicleType)) {
+                alert('Invalid vehicle type selected');
+                return;
+            }
+
+             
+            const token = sessionStorage.getItem('farehunt_token');
+            if (!token) {
+                // Token is missing, redirect to login
+                window.location.href = "../login";
+                return;
+            }
+
+            fetch(`${API_BASE_URL}/book`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify({
+                    vehicleType: vehicleType,
+                    service: service,
+                    pickup_location: `${pickupCoords.lat},${pickupCoords.lng}`,
+                    drop_location: `${dropCoords.lat},${dropCoords.lng}`
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 401 || response.status === 403) {
+                        // Token invalid or expired, redirect to login
+                        sessionStorage.removeItem('farehunt_token');
+                        window.location.href = "../login";
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'confirmed') {
+                    // Save booking details
+                    sessionStorage.setItem('bookingId', data.booking_id);
+                    sessionStorage.setItem('serviceBookingId', data.service_booking_id || '');
+                    sessionStorage.setItem('bookingPrice', data.price);
+                    sessionStorage.setItem('bookingVehicleType', vehicleType);
+                    sessionStorage.setItem('bookingPickup', pickup);
+                    sessionStorage.setItem('bookingDrop', drop);
+                    // Redirect
+                    window.location.href = data.redirect_url || '../booking/confirmation.html';
+                } else {
+                    alert(data.message || 'Failed to create booking. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error creating booking:', error);
+                alert('Booking request failed. Please try again.');
+            });
+        }
+
+
+
+
+
+
+
+        // function bookRide() {
+        //     const selectedOption = document.querySelector('.ride-option.selected');
+        //     if (!selectedOption) {
+        //         alert('Please select a ride option first');
+        //         return;
+        //     }
+
+        //     const vehicleType = selectedOption.id.split('-')[0];
+        //     const price = selectedOption.querySelector('.fare-estimate').textContent;
+
+        //     // Store booking details
+        //     sessionStorage.setItem('selectedVehicle', vehicleType);
+        //     sessionStorage.setItem('ridePrice', price);
+
+        //     // Redirect to booking confirmation
+        //     window.location.href = 'booking-confirmation.html';
+        // }
+
+
+
+
+
+
+
+
         function displayVehicleBasedFares(fareData) {
             const cardsContainer = document.getElementById('fare-cards');
             cardsContainer.innerHTML = '';
@@ -757,6 +957,8 @@
 
                 console.log(`Lowest fare for ${vehicleType}:`, lowestFare); // Debug log
 
+
+
                 const card = document.createElement('div');
                 card.className = 'fare-card';
                 card.innerHTML = `
@@ -772,6 +974,12 @@
                         </div>
                     </div>
                 `;
+                card.addEventListener('click', () => {
+                    // Handle card click event (e.g., redirect to booking page)
+                    console.log(`Clicked on ${lowestFare.service} - ${vehicleType}`);
+                    bookRide(vehicleType, lowestFare.service);
+
+                });
                 cardsContainer.appendChild(card);
             });
         }
@@ -812,6 +1020,13 @@
                         </div>
                     </div>
                 `;
+                card.addEventListener('click', () => {
+                    // Handle card click event (e.g., redirect to booking page)
+                    console.log(`Clicked on ${lowestFare.service} - ${lowestFare.vehicleType}`);
+                    // Redirect to booking page or perform any other action
+
+                    bookRide(lowestFare.vehicleType, lowestFare.service);
+                });
                 cardsContainer.appendChild(card);
             });
         }
