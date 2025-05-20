@@ -54,26 +54,25 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 500px;
       margin: 60px auto 0;
       padding: var(--spacing);
     }
 
-    .card {
+    .profile-card {
       background: var(--card-background);
       border-radius: var(--border-radius);
       box-shadow: var(--shadow);
-      padding: var(--spacing);
-      margin-bottom: var(--spacing);
+      padding: calc(var(--spacing) * 2);
       transition: var(--transition);
     }
 
-    .profile-section {
+    .profile-header {
       text-align: center;
-      padding: calc(var(--spacing) * 2);
+      margin-bottom: calc(var(--spacing) * 2);
     }
 
-    .profile-section img {
+    .profile-header img {
       width: 120px;
       height: 120px;
       border-radius: 50%;
@@ -82,80 +81,56 @@
       transition: var(--transition);
     }
 
-    .profile-section img:hover {
+    .profile-header img:hover {
       transform: scale(1.05);
     }
 
-    .profile-section h2 {
+    .profile-header h2 {
       font-size: 2rem;
       font-weight: bold;
       color: var(--primary-color);
-    }
-
-    .actions {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: var(--spacing);
       margin-bottom: var(--spacing);
     }
 
-    .action-card {
-      text-align: center;
-      padding: calc(var(--spacing) * 1.5);
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 160px;
-    }
-
-    .action-card:hover {
-      transform: translateY(-10px);
-      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .action-card i {
-      font-size: 2.5rem;
-      color: var(--primary-color);
-      margin-bottom: var(--spacing);
-    }
-
-    .action-card p {
-      font-size: 1.2rem;
-      font-weight: 500;
-      color: #333;
-    }
-
-    .menu {
+    .profile-actions {
       display: grid;
+      grid-template-columns: 1fr;
       gap: var(--spacing);
+      margin-top: calc(var(--spacing) * 2);
+      padding-top: calc(var(--spacing) * 2);
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
     }
 
-    .menu-item {
+    .action-button {
       display: flex;
       align-items: center;
       padding: calc(var(--spacing) * 1.2);
+      background: var(--card-background);
+      border-radius: var(--border-radius);
       cursor: pointer;
-      height: 80px;
+      transition: var(--transition);
+      border: none;
+      width: 100%;
+      text-align: left;
     }
 
-    .menu-item:hover {
+    .action-button:hover {
       transform: translateX(10px);
       background: #e0e7ff;
     }
 
-    .menu-item i {
+    .action-button i {
       font-size: 1.8rem;
-      margin-right: var(--spacing);
       color: var(--primary-color);
+      margin-right: var(--spacing);
       width: 40px;
       text-align: center;
     }
 
-    .menu-item span {
+    .action-button span {
       font-size: 1.1rem;
       font-weight: 500;
+      color: #333;
     }
 
     @media (max-width: 768px) {
@@ -174,38 +149,28 @@
         padding: 10px 15px;
       }
 
-      .profile-section {
+      .profile-card {
         padding: var(--spacing);
       }
 
-      .profile-section img {
+      .profile-header img {
         width: 100px;
         height: 100px;
       }
 
-      .profile-section h2 {
+      .profile-header h2 {
         font-size: 1.8rem;
       }
 
-      .actions {
-        grid-template-columns: 1fr;
-      }
-
-      .action-card {
-        height: 140px;
+      .action-button {
         padding: var(--spacing);
       }
 
-      .menu-item {
-        height: 70px;
-        padding: var(--spacing);
-      }
-
-      .menu-item i {
+      .action-button i {
         font-size: 1.5rem;
       }
 
-      .menu-item span {
+      .action-button span {
         font-size: 1rem;
       }
     }
@@ -219,12 +184,12 @@
         margin-top: 40px;
       }
 
-      .profile-section img {
+      .profile-header img {
         width: 80px;
         height: 80px;
       }
 
-      .profile-section h2 {
+      .profile-header h2 {
         font-size: 1.5rem;
       }
     }
@@ -264,46 +229,21 @@
   <a class="back-btn" href="../mainPage"><i class="fas fa-arrow-left"></i> Back</a>
   
   <div class="container">
-    <div class="card profile-section">
-      <img src="../assets/Farehunt logo.png" alt="Profile Picture">
-      <h2 id="userName">Loading...</h2>
-    </div>
+    <div class="profile-card">
+      <div class="profile-header">
+        <img src="../assets/Farehunt logo.png" alt="Profile Picture">
+        <h2 id="userName">Loading...</h2>
+      </div>
 
-    <div class="actions">
-      <div class="card action-card" id="allBookings">
-        <i class="fas fa-history"></i>
-        <p>Activity</p>
-      </div>
-      <!-- Commented out dummy elements
-      <div class="card action-card">
-        <i class="fas fa-wallet"></i>
-        <p>Wallet</p>
-      </div>
-      <div class="card action-card">
-        <i class="fas fa-tag"></i>
-        <p>Promos</p>
-      </div>
-      -->
-    </div>
-
-    <div class="menu">
-      <!-- Commented out dummy elements
-      <div class="card menu-item">
-        <i class="fas fa-headset"></i>
-        <span>Support</span>
-      </div>
-      <div class="card menu-item">
-        <i class="fas fa-user-cog"></i>
-        <span>Manage account</span>
-      </div>
-      <div class="card menu-item">
-        <i class="fas fa-cog"></i>
-        <span>Settings</span>
-      </div>
-      -->
-      <div class="card menu-item" id="logout">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Log Out</span>
+      <div class="profile-actions">
+        <button class="action-button" id="allBookings">
+          <i class="fas fa-history"></i>
+          <span>Activity</span>
+        </button>
+        <button class="action-button" id="logout">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Log Out</span>
+        </button>
       </div>
     </div>
   </div>
