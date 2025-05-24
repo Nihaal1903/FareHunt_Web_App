@@ -39,6 +39,15 @@
             transition: background-color 0.3s ease;
             font-family: 'Open Sans', sans-serif;
         }
+        .header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px;
+          background: linear-gradient(to right, #42a5f5, #1e88e5);
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          color: white;
+        }
 
         .header:hover {
             background: linear-gradient(to right, #1e88e5, #0d47a1);
@@ -159,26 +168,32 @@
             font-size: 14px;
         }
 
-        .buttons {
-            display: flex;
-            justify-content: space-evenly;
-            margin-top: 10px;
-        }
+.buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 0 10px;
+    margin-bottom: 30px;
+}
 
-        .buttons a {
-           text-decoration: none;
-           padding: 12px 10px; /* Reduced padding for smaller size */
-           border-radius: 8px;
-           color: white;
-           text-align: center;
-           flex: 1; /* Adjust flex property to distribute evenly */
-           margin: 5px; /* Added consistent margin */
-           display: flex;
-           align-items: center;
-           gap: 10px; /* Adjusted spacing between icon and text */
-           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-           transition: transform 0.3s ease, box-shadow 0.3s ease;
-           font-size: 14px; /* Reduced font size */
+.buttons a {
+    flex: 1 1 45%; /* Make items wrap at roughly 2 per row */
+    min-width: 120px;
+    text-decoration: none;
+    padding: 12px 10px;
+    border-radius: 8px;
+    color: white;
+    text-align: center;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    font-size: 14px;
 }
 
         .buttons a:hover {
@@ -247,11 +262,13 @@
             border-bottom: none;
         }
 
+
         @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+          .header {
+              flex-direction: row;
+              justify-content: space-between;
+              align-items: center;
+          }
             .buttons a {
                 padding: 8px 12px;
                 font-size: 14px;

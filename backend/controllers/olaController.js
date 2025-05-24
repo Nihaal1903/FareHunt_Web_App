@@ -106,6 +106,8 @@ const createBooking = async (req, res) => {
             pickup_location,
             drop_location,
             // redirect_url: `https://book.olacabs.com/?vehicle=${vehicleType}&booking_id=${olaBookingId}`,
+            // redirect_url: `https://olawebcdn.com/ul/?action=setPickup&pickup_lat=${pickup_lat}&pickup_lng=${pickup_lng}&drop_lat=${drop_lat}&drop_lng=${drop_lng}`
+
             redirect_url: `https://book.olacabs.com/?pickup_lat=${pickup_lat}&pickup_lng=${pickup_lng}&drop_lat=${drop_lat}&drop_lng=${drop_lng}&category=${vehicleType}`,
             cancellation_policy: "Free cancellation within 2 minutes of booking"
         });

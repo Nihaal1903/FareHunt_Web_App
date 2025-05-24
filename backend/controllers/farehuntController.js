@@ -28,7 +28,8 @@ const createBooking = async (req, res) => {
         let VehicleTypes;
 
         if (service === 'uber') {
-            redirect_url = `https://m.uber.com/ul/?pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&drop[latitude]=${drop_lat}&drop[longitude]=${drop_lng}&product_id=${vehicleType}`;
+            redirect_url = `https://m.uber.com/ul/?action=setPickup&pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&dropoff[latitude]=${drop_lat}&dropoff[longitude]=${drop_lng}`;
+            // redirect_url = `https://m.uber.com/ul/?pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&drop[latitude]=${drop_lat}&drop[longitude]=${drop_lng}&product_id=${vehicleType}`;
             serviceBookingId = `OLA${vehicleType.toUpperCase().slice(0,3)}${Date.now().toString().slice(-6)}`;
             VehicleTypes = require('../config/services').uber.vehicleTypes;
 

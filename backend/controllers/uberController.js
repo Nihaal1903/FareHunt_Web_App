@@ -84,7 +84,8 @@ const createBooking = async (req, res) => {
             pickup_location,
             drop_location,
             // redirect_url: `https://m.uber.com/ul/?action=setPickup&pickup=my_location&vehicle=${vehicleType}&booking_id=${booking.booking_id}`
-            redirect_url: `https://m.uber.com/ul/?pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&drop[latitude]=${drop_lat}&drop[longitude]=${drop_lng}&product_id=${vehicleType}`
+            redirect_url: `https://m.uber.com/ul/?action=setPickup&pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&dropoff[latitude]=${drop_lat}&dropoff[longitude]=${drop_lng}`
+            // redirect_url: `https://m.uber.com/ul/?pickup[latitude]=${pickup_lat}&pickup[longitude]=${pickup_lng}&drop[latitude]=${drop_lat}&drop[longitude]=${drop_lng}&product_id=${vehicleType}`
         });
     } catch (error) {
         res.status(500).json({ 
@@ -94,3 +95,5 @@ const createBooking = async (req, res) => {
 };
 
 module.exports = { estimatePrice, createBooking };
+
+// https://m.uber.com/ul/?action=setPickup&dropoff[latitude]=37.7749&dropoff[longitude]=-122.4194&dropoff[nickname]=San+Francisco
